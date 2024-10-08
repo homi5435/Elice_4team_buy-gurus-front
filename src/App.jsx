@@ -15,8 +15,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/order" element={<Outlet />} >
-        <Route index element={<Order/>}/>
-        <Route path=":orderId" element={<OrderDetail />} />
+          <Route index element={<Order/>}/>
+          <Route path=":orderId" element={<OrderDetail />} />
+        </Route>
         <Route path="/test" element={<AccordionTest />}/>
       </Routes>
     </>
