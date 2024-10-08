@@ -13,22 +13,23 @@ function Login() {
     };
 
     try {
-      const response = await fetch("/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(loginData),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
+        }
+      );
 
       if (response.ok) {
-        // 로그인 성공 처리
-        const data = await response.json();
-        console.log("로그인 성공:", data);
-        // 예: 홈 화면으로 리다이렉션
-        // window.location.href = '/home';
+        // const data = await response.json();
+        console.log("로그인 성공:");
+        // localStorage.setItem("accessToken", data.accessToken);
+        window.location.href = "/home";
       } else {
-        // 로그인 실패 처리
         const errorData = await response.json();
         console.error("로그인 실패:", errorData);
         alert("로그인에 실패했습니다.");
@@ -40,30 +41,54 @@ function Login() {
   };
 
   return (
-    <div>
-      <h2>로그인</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>이메일:</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>비밀번호:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">로그인</button>
-      </form>
-    </div>
+    <>
+      <div>
+        <h2>로그인</h2>
+        <form onSubmit={handleLogin}>
+          <div>
+            <label>이메일:</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>비밀번호:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit">로그인</button>
+        </form>
+      </div>
+      <a href="/signup">회원가입</a>
+      <a
+        href={`${
+          import.meta.env.VITE_APP_BACKEND_URL
+        }/oauth2/authorization/google`}
+      >
+        Google 로그인
+      </a>
+      <a
+        href={`${
+          import.meta.env.VITE_APP_BACKEND_URL
+        }/oauth2/authorization/naver`}
+      >
+        Naver 로그인
+      </a>
+      <a
+        href={`${
+          import.meta.env.VITE_APP_BACKEND_URL
+        }/oauth2/authorization/kakao`}
+      >
+        Kakao 로그인
+      </a>
+    </>
   );
 }
 
