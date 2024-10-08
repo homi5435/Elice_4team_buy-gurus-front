@@ -34,7 +34,6 @@ const Signup = () => {
       } else {
         // const errorData = await response.json();
         // console.error("회원가입 실패:", errorData);
-        console.log(`${import.meta.env.VITE_APP_BACKEND_URL}/signup`);
         alert("회원가입에 실패했습니다.");
       }
     } catch (error) {

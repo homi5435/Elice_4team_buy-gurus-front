@@ -17,6 +17,7 @@ function Login() {
         `${import.meta.env.VITE_APP_BACKEND_URL}/login`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
@@ -27,7 +28,6 @@ function Login() {
       if (response.ok) {
         // const data = await response.json();
         console.log("로그인 성공:");
-        // localStorage.setItem("accessToken", data.accessToken);
         window.location.href = "/home";
       } else {
         const errorData = await response.json();
