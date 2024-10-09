@@ -8,6 +8,7 @@ import Order from "./pages/Order/Order";
 import OrderDetail from "./pages/Order/OrderDetail";
 import AccordionTest from "./pages/AccordionTest";
 import MyPage from "./pages/MyPage";
+import OrderItem from "./pages/OrderItem/OrderItem";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path=":orderId" element={<OrderDetail />} />
         </Route>
         <Route path="/test" element={<AccordionTest />} />
+        <Route path="/orderitem" element={<OrderItem />} />
       </Routes>
     </>
   );
