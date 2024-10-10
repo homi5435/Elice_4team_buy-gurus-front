@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { OrderResponse } from "./OrderResponse";
 
 import Modal from "react-bootstrap/Modal";
-import { Alert, CardBody } from "react-bootstrap";
+import { Alert, CardBody, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Card, Button, ListGroup, Row, Col, Image, Badge } from "react-bootstrap";
 
 import './orderDetail.styles.css';
@@ -69,7 +69,7 @@ const OrderAddressInfo = ({ shippingAddress, orderStatus, modalOpenHandler }) =>
         <Card.Body>
           <p className="mb-1"><strong>이름:</strong> {shippingAddress.name}</p>
           <p className="mb-1"><strong>전화번호:</strong> {shippingAddress.phoneNum}</p>
-          <p className="mb-1"><strong>배송지:</strong> {shippingAddress.address}</p>
+          <p className="mb-1"><strong>배송지:</strong> {shippingAddress.address.replace("|", " ")}</p>
         </Card.Body>
       </Card>
     </div>
@@ -158,7 +158,6 @@ const OrderDetail = () => {
 
   const closeModal = () => setIsModalOpen(false);
   const submit = () => {
-    console.log(submit);
     setIsModalOpen(false);
   }
 
@@ -167,14 +166,14 @@ const OrderDetail = () => {
       { !loading && <OrderDetailHeader orderId={orderId} orderDetail={orderDetail} /> }
       { !loading && <OrderAddressInfo shippingAddress={shippingAddress} orderStatus={orderDetail.status} modalOpenHandler={setIsModalOpen} />}  
 
-      <ShippingAddressModal isOpen={isModalOpen} onClose={closeModal} setData={setShippingAddress}/>
+      <ShippingAddressModal orderId={orderId} isOpen={isModalOpen} onClose={closeModal} setData={setShippingAddress}/>
 
       { !loading && <OrderDetailDrawer orderDetail={orderDetail} /> }
     </div>
   )
 }
 
-const ShippingAddressModal = ({isOpen, onClose, setData}) => {
+const ShippingAddressModal = ({isOpen, orderId, onClose, setData}) => {
   const [isAlertShown, setIsAlertShown] = useState(false);
   const [selectedId, setSelectedId] = useState(0);
   const [shippingAddressList, setShippingAddressList] = useState([]);
@@ -227,6 +226,12 @@ const ShippingAddressModal = ({isOpen, onClose, setData}) => {
       phoneNum: phoneNumData,
     }, ...shippingAddressList])
   }
+
+  const renderTooltip = (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      배송지 선택시 <br/>자동으로 업데이트 됩니다!
+    </Tooltip>
+  );
   
   return (
     <>
@@ -255,7 +260,6 @@ const ShippingAddressModal = ({isOpen, onClose, setData}) => {
                 onComplete={result => {
                   setIsPostapiShown(false);
                   setApiData(result);
-                  console.log(result)
                 }}
               />
             </Modal.Body>
@@ -263,25 +267,24 @@ const ShippingAddressModal = ({isOpen, onClose, setData}) => {
         )
       }
 
-      <Modal show={isOpen} onHide={handleModalClose} dialogClassName="custom-modal">
+      <Modal 
+        show={isOpen} 
+        onHide={handleModalClose} 
+        dialogClassName="custom-modal"
+      >
         {
           modalPageNum === 0
             ? <>
-                <Button className="me-3" onClick={() => {
-                    console.log("추가 버튼 클릭")
-                    setModalPageNum(1);
-                  }}
-                  style={{
-                      position: 'fixed',
-                      bottom: '20px',
-                      right: '20px',
-                      zIndex: 1000,
-                  }}
-                >
-                    배송지 추가
-                </Button>
                 <Modal.Header closeButton className="d-flex justify-content-between">
-                  <Modal.Title>배송지 선택</Modal.Title>
+                  <Modal.Title>
+                    배송지 선택
+                    <OverlayTrigger
+                      placement="right"
+                      overlay={renderTooltip}
+                    >
+                      <span style={{ cursor: 'pointer', marginLeft: '5px'}}>🔍</span>
+                    </OverlayTrigger>
+                  </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                   <ListGroup>
@@ -290,14 +293,29 @@ const ShippingAddressModal = ({isOpen, onClose, setData}) => {
                       return (
                         <ListGroup.Item key={index} action onClick={(e) => {
                             setData(address)
+                            fetch(`/api/order/${orderId}/address`, {
+                                method: "PATCH",
+                                headers: {
+                                  "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                  name: address.name,
+                                  phoneNum: address.phoneNum,
+                                  address: address.address
+                                })
+                              })
+                              .then()
+                              .catch(err => console.log(err))
                             handleModalClose();
                           }}
                         >
                           <ShippingAddressDetail address={address}/>
-                          <div className="d-flex justify-content-end">
+                          <div className="d-flex justify-content-start">
                             <Button className="me-4"
                               onClick={(e) => {
                                 e.stopPropagation()
+                                setSelectedIndex(index)
+                                setSelectedId(address.id)
                                 setModalPageNum(2)
                               }}
                             >수정</Button>
@@ -313,9 +331,17 @@ const ShippingAddressModal = ({isOpen, onClose, setData}) => {
                     })
                   }
                   </ListGroup>
+                  <div style={{
+                          position: 'sticky',
+                          bottom: '20px',
+                          textAlign: 'right',
+                          zIndex: 1000,
+                      }}>
+                    <Button className="me-3" onClick={() => setModalPageNum(1)}>
+                      배송지 추가
+                    </Button>
+                  </div>
                 </Modal.Body>
-                <Modal.Footer>
-                </Modal.Footer>
               </>
             : modalPageNum === 1
               ? <>
@@ -411,92 +437,225 @@ const ShippingAddressModal = ({isOpen, onClose, setData}) => {
                     </Button>
                   </Modal.Footer>
                 </>
-              : <>
-                  <Modal.Header closeButton className="d-flex justify-content-between">
-                    <Modal.Title>배송지 수정</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                  <div className="address-append-form">
-                      <div className="mb-3">
-                        <label className="form-label small">받는이:</label>
-                        <input
-                          type="text"
-                          className="form-control w-100"
-                          placeholder="이름을 입력하세요."
-                          value={nameData}
-                          onChange={(e) => setNameData(e.target.value)}
-                        />
-                      </div>
+              : 
+                <ShippingAddressUpdate 
+                  addressList={shippingAddressList}
+                  index={selectedIndex}
+                  apiData={apiData}
+                  setModalPageNum={setModalPageNum}
+                  setIsPostapiShown={setIsPostapiShown}
+                  setAddressList={setShippingAddressList}
+                />
+                // <>
+                //   <Modal.Header closeButton className="d-flex justify-content-between">
+                //     <Modal.Title>배송지 수정</Modal.Title>
+                //   </Modal.Header>
+                //   <Modal.Body>
+                //   <div className="address-append-form">
+                //       <div className="mb-3">
+                //         <label className="form-label small">받는이:</label>
+                //         <input
+                //           type="text"
+                //           className="form-control w-100"
+                //           placeholder="이름을 입력하세요."
+                //           value={"asdF"}
+                //           onChange={(e) => setNameData(e.target.value)}
+                //         />
+                //       </div>
 
-                      <div className="mb-3">
-                        <label className="form-label small">전화번호:</label>
-                        <input
-                          type="text"
-                          className="form-control w-100"
-                          placeholder="전화번호를 입력하세요"
-                          value={phoneNumData}
-                          maxLength={13}
-                          minLength={11}
-                          onChange={(e) => setPhoneNumData(e.target.value)}
-                        />
-                      </div>
+                //       <div className="mb-3">
+                //         <label className="form-label small">전화번호:</label>
+                //         <input
+                //           type="text"
+                //           className="form-control w-100"
+                //           placeholder="전화번호를 입력하세요"
+                //           value={phoneNumData}
+                //           maxLength={13}
+                //           minLength={11}
+                //           onChange={(e) => setPhoneNumData(e.target.value)}
+                //         />
+                //       </div>
 
-                      <div className="mb-3">
-                        <label className="form-label small">주소</label>
-                        <div className="row">
-                          <div className="col-9">
-                            <input
-                              type="text"
-                              className="form-control w-100 address-value-inputted"
-                              readOnly
-                              value={apiData ? `${apiData.address}${apiData.buildingName ? " (" + apiData.buildingName + ")" : ""}` : ""}
-                              placeholder="주소 찾기로 넣어주세요!"
-                              style={{ userSelect: 'none' }}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setIsPostapiShown(true);
-                              }}
-                            />
-                          </div>
-                          <div className="col-3">
-                            <Button variant="primary" onClick={() => setIsPostapiShown(true)} className="w-100">
-                              주소 찾기
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
+                //       <div className="mb-3">
+                //         <label className="form-label small">주소</label>
+                //         <div className="row">
+                //           <div className="col-9">
+                //             <input
+                //               type="text"
+                //               className="form-control w-100 address-value-inputted"
+                //               readOnly
+                //               value={apiData ? `${apiData.address}${apiData.buildingName ? " (" + apiData.buildingName + ")" : ""}` : ""}
+                //               placeholder="주소 찾기로 넣어주세요!"
+                //               style={{ userSelect: 'none' }}
+                //               onClick={(e) => {
+                //                 e.preventDefault();
+                //                 setIsPostapiShown(true);
+                //               }}
+                //             />
+                //           </div>
+                //           <div className="col-3">
+                //             <Button variant="primary" onClick={() => setIsPostapiShown(true)} className="w-100">
+                //               주소 찾기
+                //             </Button>
+                //           </div>
+                //         </div>
+                //       </div>
 
-                      <div className="mb-3">
-                        <label className="form-label small">세부주소</label>
-                        <input
-                          type="text"
-                          className="form-control w-100"
-                          placeholder="세부주소를 입력하세요"
-                          value={addressData}
-                          onChange={(e) => setAddressData(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <Button variant="secondary" onClick={() => {
-                      setModalPageNum(0);
-                    }}>
-                      취소
-                    </Button>
-                    <Button onClick={() => {
-                      console.log("추가 버튼 클릭")
-                      setModalPageNum(0);
-                    }}>
-                      수정
-                    </Button>
-                  </Modal.Footer>
-                </>
+                //       <div className="mb-3">
+                //         <label className="form-label small">세부주소</label>
+                //         <input
+                //           type="text"
+                //           className="form-control w-100"
+                //           placeholder="세부주소를 입력하세요"
+                //           value={addressData}
+                //           onChange={(e) => setAddressData(e.target.value)}
+                //         />
+                //       </div>
+                //     </div>
+                //   </Modal.Body>
+                //   <Modal.Footer>
+                //     <Button variant="secondary" onClick={() => {
+                //       setModalPageNum(0);
+                //     }}>
+                //       취소
+                //     </Button>
+                //     <Button onClick={() => {
+                //       console.log("추가 버튼 클릭")
+                //       setModalPageNum(0);
+                //     }}>
+                //       수정
+                //     </Button>
+                //   </Modal.Footer>
+                // </>
         }
       </Modal>
     </>
   )
 }
+
+const ShippingAddressUpdate = ({ addressList, index, apiData, setModalPageNum, setIsPostapiShown, setAddressList }) => {
+  const [ name, setName ] = useState("");
+  const [ phoneNum, setPhoneNum ] = useState("");
+  const [ addressDetail, setAdressDetail ] = useState("");
+  const [ address, setAddress ] = useState("");
+
+  useEffect(() => {
+    const address = addressList[index].address.split("|").map(addr => addr.trim());
+    setName(addressList[index].name);
+    setPhoneNum(addressList[index].phoneNum);
+    setAddress(address[0])
+    setAdressDetail(address[1]);
+  }, [])
+
+  useEffect(() => {
+    if (apiData) {
+      setAddress(`${apiData.address}${apiData.buildingName ? " (" + apiData.buildingName + ")" : ""}`)
+    }
+  }, [apiData])
+
+  return (
+    <>
+      <Modal.Header closeButton className="d-flex justify-content-between">
+        <Modal.Title>배송지 수정</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+      <div className="address-append-form">
+          <div className="mb-3">
+            <label className="form-label small">받는이:</label>
+            <input
+              type="text"
+              className="form-control w-100"
+              placeholder="이름을 입력하세요."
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label small">전화번호:</label>
+            <input
+              type="text"
+              className="form-control w-100"
+              placeholder="전화번호를 입력하세요"
+              value={phoneNum}
+              maxLength={13}
+              minLength={11}
+              onChange={(e) => setPhoneNum(e.target.value)}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label small">주소</label>
+            <div className="row">
+              <div className="col-9">
+                <input
+                  type="text"
+                  className="form-control w-100 address-value-inputted"
+                  readOnly
+                  value={address}
+                  placeholder="주소 찾기로 넣어주세요!"
+                  style={{ userSelect: 'none' }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsPostapiShown(true);
+                  }}
+                />
+              </div>
+              <div className="col-3">
+                <Button variant="primary" onClick={() => setIsPostapiShown(true)} className="w-100">
+                  주소 찾기
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label small">세부주소</label>
+            <input
+              type="text"
+              className="form-control w-100"
+              placeholder="세부주소를 입력하세요"
+              value={addressDetail}
+              onChange={(e) => setAdressDetail(e.target.value)}
+            />
+          </div>
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={() => {
+          setModalPageNum(0);
+        }}>
+          취소
+        </Button>
+        <Button onClick={() => {
+          addressList[index] = {
+            id: addressList[index].id,
+            name: name,
+            phoneNum: phoneNum,
+            address: `${address}|${addressDetail}`
+          }
+          fetch(`/api/user/address/${addressList[index].id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: name,
+              phoneNum: phoneNum,
+              address: `${address}|${addressDetail}`
+            })
+          })
+          setAddressList(addressList);
+
+          setModalPageNum(0);
+        }}>
+          수정
+        </Button>
+      </Modal.Footer>
+    </>
+  )
+}
+
 
 const ShippingAddressDetail = ({address}) => {
   return (
