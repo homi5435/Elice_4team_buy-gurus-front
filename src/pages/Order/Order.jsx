@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
-import { OrderResponse } from "./OrderResponse";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Card, Row, Col, Button,Image, Collapse } from "react-bootstrap";
+import {OrderResponse} from "@/objects/OrderResponse";
 
 const Order = () => {
   const [ orders, setOrders ] = useState([]);

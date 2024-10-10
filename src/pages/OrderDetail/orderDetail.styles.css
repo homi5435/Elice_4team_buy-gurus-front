@@ -50,11 +50,3 @@
 .address-value-inputted:focus {
   outline: none;
 }
-
-.test-elements {
-  max-width: 1200px;        /* 최대 폭 설정 */
-  margin: 0 auto;           /* 화면 중앙 정렬 */
-  padding: 20px;            /* 내부 여백 */
-  background-color: #f9f9f9; /* 부드러운 배경 색상 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 약간의 그림자 */
-}

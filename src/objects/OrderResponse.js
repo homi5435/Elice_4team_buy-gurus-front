@@ -27,4 +27,4 @@ class ShippingAddress {
   }
 }
 
-export { OrderResponse, OrderInfo, ShippingAddress };
+export {OrderResponse, OrderInfo, ShippingAddress};
