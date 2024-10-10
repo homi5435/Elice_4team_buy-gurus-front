@@ -5,7 +5,7 @@ import Home from "./pages/Home";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import Order from "./pages/Order/Order";
-import OrderDetail from "./pages/Order/OrderDetail";
+import OrderDetail from "./pages/OrderDetail/OrderDetail";
 import AccordionTest from "./pages/AccordionTest";
 import MyPage from "./pages/MyPage";
 import OrderItem from "./pages/OrderItem/OrderItem";
