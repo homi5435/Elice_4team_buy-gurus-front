@@ -41,7 +41,7 @@ const Signup = () => {
   const handleVerifyCode = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/auth/verify-code`,
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/public/verify-code`,
         {
           method: "POST",
           headers: {
