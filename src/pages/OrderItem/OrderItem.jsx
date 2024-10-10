@@ -40,6 +40,15 @@ function OrderItem() {
     );
   };
 
+  // 전체 삭제 핸들러
+  const handleDeleteAll = () => {
+    axios.delete('/api/orderitem/1')
+      .then(() => {
+        setOrderItem([]);
+      })
+      .catch(error => console.log(error));
+  };
+
   return (
     <div>
       <Header />
@@ -53,7 +62,7 @@ function OrderItem() {
           <Button variant="danger" onClick="">
             선택삭제
           </Button>
-          <Button variant="warning" className="ms-2" onClick="">
+          <Button variant="warning" className="ms-2" onClick={handleDeleteAll}>
             전체삭제
           </Button>
         </div>
