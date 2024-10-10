@@ -15,10 +15,8 @@ function App() {
         <Route path="/" element={<Home />} exact/>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/order" element={<Outlet />} >
-          <Route index element={<Order/>}/>
-          <Route path=":orderId" element={<OrderDetail />} />
-        </Route>
+        <Route path="/order" element={<Order/>} />
+        <Route path="/order/:orderId" element={<OrderDetail />} />
         <Route path="/test" element={<AccordionTest />}/>
       </Routes>
     </>
