@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { OrderResponse } from "./OrderResponse";
 import { Link, useNavigate } from "react-router-dom";
+import { Card, Row, Col, Button,Image, Collapse } from "react-bootstrap";
 
 const Order = () => {
   const [ orders, setOrders ] = useState([]);
@@ -9,9 +10,6 @@ const Order = () => {
   const [ type, setType ] = useState("c");
 
   const [ page, setPage ] = useState(1);
-  const size = 10;
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`/api/order?type=${type}&page=${page}`)
@@ -29,7 +27,6 @@ const Order = () => {
       .catch(err => {
         console.log(err);
       });
-
   }, [type, page]);
 
   const changePageInput = (e) => {
@@ -51,46 +48,93 @@ const Order = () => {
       </select>
       <h3>Total Pages! ({totalPage})</h3>
       { loading ? <strong>Loading...</strong> : null }
-      <ul>
-        { 
-          orders.map((order, idx) => {
-            return (
-              <li key={order.orderId}>
-                <Link to={`/order/${order.orderId}`}>
-                <div style={{border: '1px solid', margin: '5px'}} >
-                  <h2>{order.createdAt}</h2>
-                  <div style={{border: '2px solid red', margin: '5px'}}>
-                    {
-                      order.orderInfoList.map((orderInfo, idx) => {
-                        return (
-                          <div key={idx} style={{border: '0.5px solid', margin: '2px', padding: '5px'}}>
-                            <img src={orderInfo.imageUrl} style={{ width: '100px', height: 'auto' }} onError={(err) => console.log(err)} />
-                            <h3>{orderInfo.quantity}개</h3>
-                            <h3>{orderInfo.price}원</h3>
-                          </div>
-                        )
-                      })
-                    }
-                  </div>
-                  <div style={{border: '1px solid', margin: '2px'}}>
-                    <p>송장번호: {order.invoiceNum}</p>
-                    <p>배송상태: {order.status}</p>
-                    <p>배송비: {order.shippingFee}</p>
-                  </div>
-  
-                  <div style={{border: '1px solid', margin: '2px'}}>
-                    <p>배송지: {order.shippingAddress.address}</p>
-                    <p>전화번호: {order.shippingAddress.phoneNum}</p>
-                    <p>수령자: {order.shippingAddress.name}</p>
-                  </div>
-                </div>
-                </Link>
-              </li>
-            )
-          })
-        }
-      </ul>
+      <OrderedItemList loading={loading} orders={orders} />
     </div>
+  )
+}
+
+const OrderedItemList = ({ loading, orders }) => {
+  return (
+    <div className="order-list-container">
+    <ul style={{ listStyleType: "none", paddingLeft: 0, margin: '0 auto', width: '100%', maxWidth: "600px", minWidth: "600px"}}>
+      { 
+        !loading && orders.map((order) => {
+          const orderList = order.orderInfoList
+          return (
+            <li key={order.orderId} style={{ marginBottom: '15px', textDecoration: 'none' }}>
+              <Link to={`/order/${order.orderId}`} className="text-decoration-none">
+                <Card>
+                  <Card.Header>
+                    <div className="d-flex justify-content-between align-items-start">
+                      <h4>{order.status}</h4>
+                      <Button variant="outline-secondary" size="sm" onClick={(e) => e.preventDefault()}>X</Button>
+                    </div>
+                    <small className="text-muted">{order.createdAt}</small>
+                  </Card.Header>
+                  <Card.Body>
+                  {
+                    orderList.length === 1 
+                    ? <OrderedItem item={orderList[0]}/> 
+                    : <MultipleItemLayout items={orderList} />
+                  }
+                  </Card.Body>
+                </Card>
+              </Link>
+            </li>
+          )
+        })
+      }
+    </ul>
+  </div>
+  )
+}
+
+const OrderedItem = ({ item }) => {
+  return (
+    <Row className="border p-2 rounded mx-0">
+      <Col xs={2}>
+        <Image src={item.imageUrl} fluid />
+      </Col>
+      <Col>
+        <div className="d-flex justify-content-between align-items-start">
+          <div>
+            <strong>이름</strong><p className="mb-1">asdf</p>
+            <strong>가격</strong><p className="mb-1">{(item.price * item.quantity).toLocaleString()}원</p>
+          </div>
+        </div>
+      </Col>
+    </Row>
+  )
+}
+
+const MultipleItemLayout = ({ items }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const toggleExpand = (e) => {
+    e.preventDefault();
+    setIsExpanded(!isExpanded);
+  }
+  const mainOrder = items[0];
+  const additionalOrder = items.slice(1);
+
+  return (
+    <>
+      <Card.Body className="p-0">
+        <p><strong>총액: </strong>{items.map(item => item.price * item.quantity).reduce((prev, curr) => curr+prev, 0).toLocaleString()}원</p>
+      </Card.Body>
+      <OrderedItem item={mainOrder} />
+      <Collapse in={isExpanded}>
+        <div>
+          { additionalOrder.map((order, idx) => <OrderedItem key={idx} item={order} />) }
+        </div>
+      </Collapse>
+      <Button 
+          variant="outline-secondary" 
+          onClick={toggleExpand} 
+          className="w-100"
+      >
+        {isExpanded ? '접기' : `${additionalOrder.length}개 더 보기`}
+      </Button>
+    </>
   )
 }
 
