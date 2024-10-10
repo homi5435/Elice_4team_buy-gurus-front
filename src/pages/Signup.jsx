@@ -5,9 +5,72 @@ const Signup = () => {
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [message, setMessage] = useState("");
 
+  // 이메일 인증 코드 전송 함수
+  const handleSendVerificationCode = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_APP_BACKEND_URL
+        }/api/public/send-verification-email?email=${email}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        setIsCodeSent(true);
+        setMessage("인증 코드가 이메일로 전송되었습니다.");
+      } else {
+        setMessage("인증 코드 전송에 실패했습니다. 다시 시도해주세요.");
+      }
+    } catch (error) {
+      console.error("이메일 인증 코드 전송 오류:", error);
+      setMessage("서버와의 통신 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 인증 코드 검증 함수
+  const handleVerifyCode = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/public/verify-code`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, code: verificationCode }),
+        }
+      );
+
+      if (response.ok) {
+        setIsEmailVerified(true);
+        setMessage("이메일 인증이 완료되었습니다.");
+      } else {
+        setMessage("인증 코드가 일치하지 않습니다.");
+      }
+    } catch (error) {
+      console.error("인증 코드 검증 오류:", error);
+      setMessage("서버와의 통신 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 회원가입 함수
   const handleSignup = async (e) => {
     e.preventDefault();
+
+    if (!isEmailVerified) {
+      setMessage("이메일 인증을 완료해야 회원가입이 가능합니다.");
+      return;
+    }
 
     const signupData = {
       nickname: nickname,
@@ -28,12 +91,9 @@ const Signup = () => {
       );
 
       if (response.status === 201) {
-        // const data = await response.json();
-        console.log("회원가입 성공:");
+        console.log("회원가입 성공");
         window.location.href = "/login";
       } else {
-        // const errorData = await response.json();
-        // console.error("회원가입 실패:", errorData);
         alert("회원가입에 실패했습니다.");
       }
     } catch (error) {
@@ -61,7 +121,31 @@ const Signup = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={isEmailVerified} // 이메일 인증 완료 후 수정 불가
           />
+          <button
+            type="button"
+            onClick={handleSendVerificationCode}
+            disabled={isCodeSent || isEmailVerified}
+          >
+            인증 코드 받기
+          </button>
+
+          {isCodeSent && !isEmailVerified && (
+            <>
+              <label>인증 코드:</label>
+              <input
+                type="text"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                required
+              />
+              <button type="button" onClick={handleVerifyCode}>
+                인증 코드 확인
+              </button>
+            </>
+          )}
+
           <label>비밀번호:</label>
           <input
             type="password"
@@ -69,8 +153,11 @@ const Signup = () => {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">회원가입</button>
+          <button type="submit" disabled={!isEmailVerified}>
+            회원가입
+          </button>
         </form>
+        {message && <p>{message}</p>}
       </div>
     </>
   );
