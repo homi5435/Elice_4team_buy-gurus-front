@@ -1,4 +1,5 @@
 import {Button} from "react-bootstrap";
+import "../css/shippingAddressModalBody.styles.css";
 
 const ShippingAddressModalBody = ({
   name, setName,
