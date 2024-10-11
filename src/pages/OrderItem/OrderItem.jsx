@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Container, Row, Col, Button, Form, Card } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Card, CloseButton } from 'react-bootstrap';
 import Header from '/src/components/Header';
 import replace from '/src/assets/No_Image_Available.jpg';
 
@@ -49,6 +49,15 @@ function OrderItem() {
       .catch(error => console.log(error));
   };
 
+  // 선택 삭제 핸들러
+  const handleDelete = (id) => {
+    axios.delete(`/api/orderitem/${id}`)
+      .then(() => {
+        setOrderItem(orderItems.filter((orderItem) => orderItem.id !== id)); // 해당 id를 가진 장바구니를 제외하고 set
+      })
+      .catch(error => console.log(error));
+  };
+
   return (
     <div>
       <Header />
@@ -57,17 +66,7 @@ function OrderItem() {
       <Container className="py-5">
         <h1 className="mb-4">장바구니</h1>
 
-        {/* 선택삭제 및 전체삭제 버튼 */}
-        <div className="mb-3">
-          <Button variant="danger" onClick="">
-            선택삭제
-          </Button>
-          <Button variant="warning" className="ms-2" onClick={handleDeleteAll}>
-            전체삭제
-          </Button>
-        </div>
-
-        {/* 주문 항목 목록 */}
+        {/* 장바구니 목록 */}
         <Row id="order-items">
           {orderItems.map((orderItem) => (
             <Col key={orderItem.id} xs={12} className="mb-3">
@@ -94,10 +93,21 @@ function OrderItem() {
                     <span className="input-group-text">개</span>
                   </Form.Group>
                 </Card.Body>
+                <CloseButton
+                  className="position-absolute top-0 end-0 m-2"
+                  onClick={() => handleDelete(orderItem.id)}
+                />
               </Card>
             </Col>
           ))}
         </Row>
+
+        {/* 전체삭제 버튼 */}
+        <div className="mb-3">
+          <Button variant="warning" className="ms-2" onClick={handleDeleteAll}>
+            전체삭제
+          </Button>
+        </div>
 
         {/* 총 수량 및 총 가격 */}
         <Row className="mt-4">
@@ -110,7 +120,7 @@ function OrderItem() {
             </p>
           </Col>
           <Col md={6} className="text-end">
-            <Button variant="primary" onClick={() => alert("결제 페이지로 이동합니다!")}>
+            <Button variant="primary" onClick="">
               결제하기
             </Button>
           </Col>
