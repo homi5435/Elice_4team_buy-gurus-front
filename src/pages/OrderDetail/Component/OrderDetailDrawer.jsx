@@ -1,19 +1,13 @@
 import {Card, Row, Col, Image} from "react-bootstrap";
+import "../css/orderDetailDrawer.styles.css";
 
 const OrderDetailDrawer = ({ orderDetail }) => {
   const totalAmount = orderDetail.shippingFee + orderDetail.orderInfoList
                           .map(info => info.price * info.quantity)
                           .reduce((acc, cur) => acc + cur, 0);
 
-  const divStyle = {
-      maxWidth: '1200px',
-      margin: '0 auto',
-      padding: '20px',
-      backgroundColor: '#f9f9f9',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-  }
   return (
-    <div style={divStyle}>
+    <div className="order-detail-drawer">
       <h4>주문 내역</h4>
       {
         orderDetail.orderInfoList.map((info, index) => {
