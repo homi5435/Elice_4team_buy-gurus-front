@@ -1,4 +1,5 @@
 import {Tooltip, Modal, OverlayTrigger, ListGroup, Button} from "react-bootstrap";
+import "../css/shippingAddressMain.styles.css";
 
 const ShippingAddressMain = ({ 
   shippingAddressList, setData, orderId, handleModalClose,
@@ -19,7 +20,7 @@ const ShippingAddressMain = ({
             placement="right"
             overlay={renderTooltip}
           >
-            <span style={{ cursor: 'pointer', marginLeft: '5px'}}>🔍</span>
+            <span className="inspect-trigger">🔍</span>
           </OverlayTrigger>
         </Modal.Title>
       </Modal.Header>
@@ -28,7 +29,8 @@ const ShippingAddressMain = ({
         {
           shippingAddressList.map((address, index) => {
             return (
-              <ListGroup.Item key={index} action onClick={(e) => {
+              // action 때문에 button으로 바뀐다!
+              <ListGroup.Item key={index} onClick={(e) => {
                   setData(address)
                   fetch(`/api/order/${orderId}/address`, {
                       method: "PATCH",
@@ -67,12 +69,7 @@ const ShippingAddressMain = ({
           })
         }
         </ListGroup>
-        <div style={{
-                position: 'sticky',
-                bottom: '20px',
-                textAlign: 'right',
-                zIndex: 1000,
-            }}>
+        <div className="address-append-btn">
           <Button className="me-3" onClick={() => setModalPageNum(1)}>
             배송지 추가
           </Button>

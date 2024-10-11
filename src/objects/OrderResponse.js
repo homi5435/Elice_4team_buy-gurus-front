@@ -3,10 +3,17 @@ class OrderResponse {
     this.orderId = data.orderId;
     this.createdAt = data.createdAt.split(".")[0].replace("T", " ");
     this.status = data.status;
-    this.invoiceNum = data.invoiceNum;
+    this.invoice = new Invoice(data.invoice);
     this.shippingFee = data.shippingFee;
     this.orderInfoList = data.orderInfoList.map(data => new OrderInfo(data));
     this.shippingAddress = new ShippingAddress(data.shippingAddress)
+  }
+}
+
+class Invoice {
+  constructor(invoiceInfo) {
+    this.invoiceNum = invoiceInfo.invoiceNum;
+    this.shippingCompany = invoiceInfo.shippingCompany;
   }
 }
 
