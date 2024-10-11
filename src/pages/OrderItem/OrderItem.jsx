@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Container, Row, Col, Button, Form, Card, CloseButton } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Card, CloseButton, Modal } from 'react-bootstrap';
 import Header from '/src/components/Header';
 import replace from '/src/assets/No_Image_Available.jpg';
 
@@ -58,6 +58,11 @@ function OrderItem() {
       .catch(error => console.log(error));
   };
 
+  // 모달
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  
   return (
     <div>
       <Header />
@@ -95,8 +100,26 @@ function OrderItem() {
                 </Card.Body>
                 <CloseButton
                   className="position-absolute top-0 end-0 m-2"
-                  onClick={() => handleDelete(orderItem.id)}
+                  onClick={handleShow}
                 />
+
+                {/* 모달 컴포넌트 */}
+                <Modal show={show} onHide={handleClose}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>선택하신 상품을 삭제 하시겠습니까?</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Footer className="d-flex justify-content-start">
+                    <Button variant="primary" className="me-2" onClick={() => {
+                      handleDelete(orderItem.id)
+                      handleClose();
+                    }}>
+                      예
+                    </Button>
+                    <Button variant="secondary" onClick={handleClose}>
+                      아니오
+                    </Button>
+                  </Modal.Footer>
+                </Modal>
               </Card>
             </Col>
           ))}
