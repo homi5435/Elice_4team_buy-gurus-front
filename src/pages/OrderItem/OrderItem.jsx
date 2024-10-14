@@ -62,6 +62,20 @@ function OrderItem() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  // 장바구니 수정 핸들러
+  const handleUpdate = () => {
+    const selectedOrderItems = orderItems.filter((orderItem) => orderItem.selected)
+    selectedOrderItems.map((orderItem) =>
+      axios.patch(`api/orderitem/${orderItem.id}`,
+      {
+        amount : orderItem.amount
+      },
+      {
+        headers: { "Content-Type": `application/json`}
+      })
+    )
+  }
   
   return (
     <div>
@@ -143,7 +157,7 @@ function OrderItem() {
             </p>
           </Col>
           <Col md={6} className="text-end">
-            <Button variant="primary" onClick="">
+            <Button variant="primary" onClick={handleUpdate}>
               결제하기
             </Button>
           </Col>
