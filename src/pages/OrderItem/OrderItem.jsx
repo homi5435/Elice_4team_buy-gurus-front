@@ -3,9 +3,11 @@ import axios from 'axios';
 import { Container, Row, Col, Button, Form, Card, CloseButton, Modal } from 'react-bootstrap';
 import Header from '/src/components/Header';
 import replace from '/src/assets/No_Image_Available.jpg';
+import { useNavigate } from 'react-router-dom';
 
 function OrderItem() {
   const [orderItems, setOrderItem] = useState([]);
+  const navigate = useNavigate();
 
   // 장바구니 조회
   useEffect(() => {
@@ -62,6 +64,28 @@ function OrderItem() {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  // 장바구니 수정 핸들러
+  const handleUpdate = () => {
+    const selectedOrderItems = orderItems.filter((orderItem) => orderItem.selected)
+    selectedOrderItems.map((orderItem) =>
+      axios.patch(`api/orderitem/${orderItem.id}`,
+      {
+        amount : orderItem.amount
+      },
+      {
+        headers: { "Content-Type": `application/json`}
+      })
+    )
+  }
+
+  // 주문하기 핸들러
+  const handlePayment = () => {
+    handleUpdate();
+    alert("주문하기 페이지로 이동합니다.");
+    const selectedOrderItems = orderItems.filter((orderItem) => orderItem.selected)
+    navigate('/Payment', { state: { selectedOrderItems } });
+  };
   
   return (
     <div>
@@ -143,8 +167,8 @@ function OrderItem() {
             </p>
           </Col>
           <Col md={6} className="text-end">
-            <Button variant="primary" onClick="">
-              결제하기
+            <Button variant="primary" onClick={handlePayment}>
+              주문하기
             </Button>
           </Col>
         </Row>

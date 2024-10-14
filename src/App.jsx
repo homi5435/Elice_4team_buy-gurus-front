@@ -27,6 +27,7 @@ function App() {
 
         <Route path="/userMe" element={<MyPage />} />
         <Route path="/orderitem" element={<OrderItem />} />
+        <Route path="/payment" element={<Payment />} />
 
         <Route path="/test" element={<AccordionTest />} />
       </Routes>
