@@ -1,11 +1,11 @@
-import Button from "../components/Button";
+import Button from "../../components/Button";
 import { useState } from "react";
 
 const Signup = () => {
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
+  const [code, setCode] = useState("");
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [message, setMessage] = useState("");
@@ -16,7 +16,7 @@ const Signup = () => {
       const response = await fetch(
         `${
           import.meta.env.VITE_APP_BACKEND_URL
-        }/api/public/send-verification-email?email=${email}`,
+        }/api/auth/send-verification-email?email=${email}`,
         {
           method: "POST",
           headers: {
@@ -39,15 +39,20 @@ const Signup = () => {
 
   // 인증 코드 검증 함수
   const handleVerifyCode = async () => {
+    const verifyData = {
+      email: email,
+      code: code,
+    };
+
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/public/verify-code`,
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/auth/verify-code`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, code: verificationCode }),
+          body: JSON.stringify(verifyData),
         }
       );
 
@@ -136,8 +141,8 @@ const Signup = () => {
               <label>인증 코드:</label>
               <input
                 type="text"
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
                 required
               />
               <button type="button" onClick={handleVerifyCode}>

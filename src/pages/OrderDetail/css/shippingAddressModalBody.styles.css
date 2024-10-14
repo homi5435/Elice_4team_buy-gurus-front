@@ -1,0 +1,11 @@
+.address-append-form p {
+  display: inline-block
+}
+
+.address-append-form input {
+  width: 20vh
+}
+
+.address-value-inputted:focus {
+  outline: none;
+}
