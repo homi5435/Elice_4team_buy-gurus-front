@@ -14,6 +14,10 @@ const MyPage = () => {
     nickname: "",
     email: "",
   });
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [code, setCode] = useState("");
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [message, setMessage] = useState("");
 
   // 사용자 정보를 불러오는 함수
   const fetchUserInfo = async () => {
@@ -39,8 +43,71 @@ const MyPage = () => {
     }
   };
 
+  // 인증 코드 전송 함수
+  const handleSendVerificationCode = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_APP_BACKEND_URL
+        }/api/auth/send-verification-email?email=${updatedInfo.email}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        setIsCodeSent(true);
+        setMessage("인증 코드가 이메일로 전송되었습니다.");
+      } else {
+        setMessage("인증 코드 전송에 실패했습니다. 다시 시도해주세요.");
+      }
+    } catch (error) {
+      console.error("이메일 인증 코드 전송 오류:", error);
+      setMessage("서버와의 통신 중 오류가 발생했습니다.");
+    }
+  };
+
+  // 인증 코드 검증 함수
+  const handleVerifyCode = async () => {
+    const verifyData = {
+      email: updatedInfo.email,
+      code: code,
+    };
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_BACKEND_URL}/api/auth/verify-code`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(verifyData),
+        }
+      );
+
+      if (response.ok) {
+        setIsEmailVerified(true);
+        setMessage("이메일 인증이 완료되었습니다.");
+      } else {
+        setMessage("인증 코드가 일치하지 않습니다.");
+      }
+    } catch (error) {
+      console.error("인증 코드 검증 오류:", error);
+      setMessage("서버와의 통신 중 오류가 발생했습니다.");
+    }
+  };
+
   // 닉네임과 이메일을 수정하는 함수
   const handleUpdate = async () => {
+    if (isEditing.email && !isEmailVerified) {
+      setMessage("이메일 인증을 완료해야 수정할 수 있습니다.");
+      return;
+    }
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_APP_BACKEND_URL}/userMe`,
@@ -67,7 +134,7 @@ const MyPage = () => {
         email: updatedInfo.email,
       });
       setIsEditing({ nickname: false, email: false });
-      alert("수정이 완료되었습니다.");
+      setMessage("수정이 완료되었습니다.");
     } catch (error) {
       console.error("Failed to update user info:", error);
     }
@@ -123,13 +190,36 @@ const MyPage = () => {
       <div>
         <label>이메일: </label>
         {isEditing.email ? (
-          <input
-            type="email"
-            value={updatedInfo.email}
-            onChange={(e) =>
-              setUpdatedInfo({ ...updatedInfo, email: e.target.value })
-            }
-          />
+          <>
+            <input
+              type="email"
+              value={updatedInfo.email}
+              onChange={(e) =>
+                setUpdatedInfo({ ...updatedInfo, email: e.target.value })
+              }
+            />
+            <button
+              type="button"
+              onClick={handleSendVerificationCode}
+              disabled={isCodeSent || isEmailVerified}
+            >
+              인증 코드 받기
+            </button>
+            {isCodeSent && !isEmailVerified && (
+              <>
+                <label>인증 코드:</label>
+                <input
+                  type="text"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  required
+                />
+                <button type="button" onClick={handleVerifyCode}>
+                  인증 코드 확인
+                </button>
+              </>
+            )}
+          </>
         ) : (
           <span onClick={() => setIsEditing({ ...isEditing, email: true })}>
             {userInfo.email}
@@ -147,6 +237,7 @@ const MyPage = () => {
 
       <button onClick={handleUpdate}>수정하기</button>
       <button onClick={handleDelete}>회원탈퇴</button>
+      {message && <p>{message}</p>}
     </div>
   );
 };
