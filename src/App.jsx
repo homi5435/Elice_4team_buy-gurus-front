@@ -9,6 +9,7 @@ import OrderDetail from "./pages/OrderDetail/OrderDetail";
 import AccordionTest from "./pages/AccordionTest";
 import MyPage from "./pages/MyPage";
 import OrderItem from "./pages/OrderItem/OrderItem";
+import Payment from "./pages/Payment";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         
         <Route path="/userMe" element={<MyPage />} />
         <Route path="/orderitem" element={<OrderItem />} />
+        <Route path="/payment" element={<Payment />} />
 
         <Route path="/test" element={<AccordionTest />}/>
       </Routes>
