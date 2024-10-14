@@ -66,6 +66,7 @@ function Login() {
           <button type="submit">로그인</button>
         </form>
       </div>
+      <a href="/reset-password">비밀번호를 잊어버리셨나요?</a>
       <a href="/signup">회원가입</a>
       <a
         href={`${
