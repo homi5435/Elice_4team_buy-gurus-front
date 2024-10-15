@@ -18,11 +18,14 @@ class Invoice {
 }
 
 class OrderInfo {
+  static errorImage = "https://cdn.pixabay.com/photo/2013/07/13/12/09/sign-159285_1280.png";
   constructor(orderInfo) {
     this.productId = orderInfo.productId;
     this.price = orderInfo.price;
     this.quantity = orderInfo.quantity;
-    this.imageUrl = orderInfo.imageUrl ? orderInfo.imageUrl : "https://cdn.pixabay.com/photo/2013/07/13/12/09/sign-159285_1280.png";
+    this.name = orderInfo.name;
+    this.imageUrl = orderInfo.imageUrl ? orderInfo.imageUrl : OrderInfo.errorImage
+    this.reviewed = orderInfo.reviewed;
   }
 }
 

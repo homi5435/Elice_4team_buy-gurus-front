@@ -13,7 +13,7 @@ const Header = () => {
             <li className="nav-item"><a href="./home" class="nav-link active" aria-current="page">홈</a></li>
             <li className="nav-item"><a href="./mypage" class="nav-link">마이페이지</a></li>
             <li className="nav-item"><a href="./OrderItem" class="nav-link">장바구니</a></li>
-            <li className="nav-item"><a href="./OrderDetail" class="nav-link">주문내역</a></li>
+            <li className="nav-item"><a href="./order?type=c" class="nav-link">주문내역</a></li>
           </ul>
         </header>
       </div>
