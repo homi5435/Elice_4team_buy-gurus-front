@@ -3,14 +3,41 @@ import { Container, Row, Col, Button, Card} from 'react-bootstrap';
 import Header from '/src/components/Header';
 import replace from '/src/assets/No_Image_Available.jpg';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 
 function Payment(){
     const location = useLocation();
     const orderItems = location.state?.selectedOrderItems || [];
+    const shippingFee = 2000;
 
     // 총 수량 및 가격 계산
     const totalAmount = orderItems.reduce((acc, item) => item.selected ? acc + item.amount : acc, 0);
     const totalPrice = orderItems.reduce((acc, item) => item.selected ? acc + item.price * item.amount : acc, 0);
+
+    // 주문 생성
+    const handleCreateOrder = () => {
+      const orderInfoList = orderItems.map(orderItem => (
+      {
+        price: orderItem.price,
+        quantity: orderItem.amount,
+        productId: orderItem.product.id 
+      }
+    ))
+
+      const shippingInfo = 
+      {
+        name: "test",
+        address: "test address",
+        phoneNum: "010-1234-5678"
+      }
+
+      axios.post('/api/order', 
+        {
+          shippingFee: shippingFee,
+          orderInfoList: orderInfoList,
+          shippingInfo: shippingInfo
+        })
+    };
 
     return (
         <div>
@@ -60,14 +87,14 @@ function Payment(){
                 <strong>총 수량:</strong> {totalAmount}개
                 </p>
                 <p>
-                <strong>배송비:</strong> 3000₩    
+                <strong>배송비:</strong> {shippingFee}₩    
                 </p>
                 <p>
-                <strong>총 가격:</strong> {totalPrice+3000}₩
+                <strong>총 가격:</strong> {totalPrice+shippingFee}₩
                 </p>
             </Col>
             <Col md={6} className="text-end">
-                <Button variant="primary" onClick="">
+                <Button variant="primary" onClick={handleCreateOrder}>
                 결제하기
                 </Button>
             </Col>
