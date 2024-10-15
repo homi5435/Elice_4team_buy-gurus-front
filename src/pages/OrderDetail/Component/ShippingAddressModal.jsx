@@ -4,7 +4,7 @@ import {Modal, Alert, Button} from "react-bootstrap";
 import DaumPostcode from "react-daum-postcode";
 import ShippingAddressCreate from "./ShippingAddressCreate";
 import ShippingAddressUpdate from "./ShippingAddressUpdate";
-import ShippingAddressMain from "./ShippingAddressMain";
+import ShippingAddressSelect from "./ShippingAddressSelect";
 import "../css/shippingAddressModal.styles.css";
 
 const ShippingAddressModal = ({isOpen, orderId, onClose, setData}) => {
@@ -95,9 +95,9 @@ const ShippingAddressModal = ({isOpen, orderId, onClose, setData}) => {
         {
           modalPageNum === 0
             ? 
-              <ShippingAddressMain 
+              <ShippingAddressSelect 
                 shippingAddressList={shippingAddressList}
-                setData={setData}
+                setData={setData ? setData : null}
                 orderId={orderId}
                 handleModalClose={handleModalClose}
                 setSelectedIndex={setSelectedIndex}
