@@ -1,0 +1,16 @@
+.address-append-btn {
+  position: sticky;
+  bottom: 20px;
+  text-align: right;
+  z-index: 1000;
+}
+
+.inspect-trigger { 
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.recent-shipping-address {
+  position: absolute;
+  right: 10px;
+}
