@@ -82,7 +82,7 @@ function OrderItem() {
   // 주문하기 핸들러
   const handlePayment = () => {
     handleUpdate();
-    alert("주문하기 페이지로 이동합니다.");
+    alert("결제하기 페이지로 이동합니다.");
     const selectedOrderItems = orderItems.filter((orderItem) => orderItem.selected)
     navigate('/Payment', { state: { selectedOrderItems } });
   };
@@ -168,7 +168,7 @@ function OrderItem() {
           </Col>
           <Col md={6} className="text-end">
             <Button variant="primary" onClick={handlePayment}>
-              주문하기
+              결제하기
             </Button>
           </Col>
         </Row>

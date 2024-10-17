@@ -2,8 +2,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Outlet, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Product from "./pages/Product/Product";
-import Signup from "./pages/Signup";
-import Login from "./pages/Login";
+import Signup from "./pages/user/Signup";
+import Login from "./pages/user/Login";
 import Order from "./pages/Order/Order";
 import OrderDetail from "./pages/OrderDetail/OrderDetail";
 import AccordionTest from "./pages/AccordionTest";
@@ -11,7 +11,7 @@ import MyPage from "./pages/user/MyPage";
 import OrderItem from "./pages/OrderItem/OrderItem";
 import ResetPassword from "./pages/user/ResetPassword";
 import SellerRegistration from "./pages/user/SellerRegistration";
-import Payment from "./pages/Payment";
+import Payment from "./pages/OrderItem/Payment";
 
 function App() {
   return (
