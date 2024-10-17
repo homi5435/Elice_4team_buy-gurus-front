@@ -11,6 +11,7 @@ import MyPage from "./pages/user/MyPage";
 import OrderItem from "./pages/OrderItem/OrderItem";
 import ResetPassword from "./pages/user/ResetPassword";
 import SellerRegistration from "./pages/user/SellerRegistration";
+import Payment from "./pages/Payment";
 
 function App() {
   return (
