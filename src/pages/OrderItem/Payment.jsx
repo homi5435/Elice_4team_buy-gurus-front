@@ -54,10 +54,14 @@ function Payment(){
         productId: orderItem.product.id 
       }));
 
-      axios.post('/api/order', {
+      axios.post('/api/order', 
+      {
         shippingFee: shippingFee,
         orderInfoList: orderInfoList,
         shippingInfo: shippingInfo
+      },
+      {
+        withCredentials: true
       });
     };
 

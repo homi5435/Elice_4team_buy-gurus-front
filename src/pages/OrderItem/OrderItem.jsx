@@ -11,7 +11,9 @@ function OrderItem() {
 
   // 장바구니 조회
   useEffect(() => {
-    axios.get('/api/orderitem/1')
+    axios.get('/api/orderitem', {   
+      withCredentials: true
+  })
       .then(response => setOrderItem(response.data))
       .catch(error => console.log(error));
   }, []);
@@ -44,7 +46,9 @@ function OrderItem() {
 
   // 전체 삭제 핸들러
   const handleDeleteAll = () => {
-    axios.delete('/api/orderitem/1')
+    axios.delete('/api/orderitem', {
+      withCredentials: true
+    })
       .then(() => {
         setOrderItem([]);
       })
