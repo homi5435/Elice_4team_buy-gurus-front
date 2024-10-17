@@ -18,7 +18,7 @@ function OrderItem() {
 
   // 총 수량 및 가격 계산
   const totalAmount = orderItems.reduce((acc, item) => item.selected ? acc + item.amount : acc, 0);
-  const totalPrice = orderItems.reduce((acc, item) => item.selected ? acc + item.price * item.amount : acc, 0);
+  const totalPrice = orderItems.reduce((acc, item) => item.selected ? acc + item.product.price * item.amount : acc, 0);
 
   // 선택 여부 토글 핸들러
   const handleSelectChange = (id) => {
@@ -79,7 +79,7 @@ function OrderItem() {
     )
   }
 
-  // 주문하기 핸들러
+  // 결제하기 핸들러
   const handlePayment = () => {
     handleUpdate();
     alert("결제하기 페이지로 이동합니다.");
@@ -110,7 +110,7 @@ function OrderItem() {
                 <Card.Body>
                   <Card.Title>{orderItem.product.name}</Card.Title>
                   <Card.Text>
-                    가격: {orderItem.price}₩
+                    가격: {orderItem.product.price}₩
                   </Card.Text>
                   <Form.Group className="input-group">
                     <Form.Control

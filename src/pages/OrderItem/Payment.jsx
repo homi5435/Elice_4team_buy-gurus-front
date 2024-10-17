@@ -12,7 +12,7 @@ function Payment(){
 
     // 총 수량 및 가격 계산
     const totalAmount = orderItems.reduce((acc, item) => item.selected ? acc + item.amount : acc, 0);
-    const totalPrice = orderItems.reduce((acc, item) => item.selected ? acc + item.price * item.amount : acc, 0);
+    const totalPrice = orderItems.reduce((acc, item) => item.selected ? acc + item.product.price * item.amount : acc, 0);
 
     // 배송지 모달
     const [show, setShow] = useState(false);
@@ -49,7 +49,7 @@ function Payment(){
     // 주문 생성
     const handleCreateOrder = () => {
       const orderInfoList = orderItems.map(orderItem => ({
-        price: orderItem.price,
+        price: orderItem.product.price,
         quantity: orderItem.amount,
         productId: orderItem.product.id 
       }));
@@ -77,7 +77,7 @@ function Payment(){
                       <Card.Img src={replace} className="img-fluid me-3" style={{ maxWidth: "150px" }} />
                       <Card.Body>
                         <Card.Title>{orderItem.product.name}</Card.Title>
-                        <Card.Text>가격: {orderItem.price}₩</Card.Text>
+                        <Card.Text>가격: {orderItem.product.price}₩</Card.Text>
                         <Card.Text>수량: {orderItem.amount}개</Card.Text>
                       </Card.Body>
                     </Card>
