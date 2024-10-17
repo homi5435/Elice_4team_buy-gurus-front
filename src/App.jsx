@@ -12,6 +12,7 @@ import OrderItem from "./pages/OrderItem/OrderItem";
 import ResetPassword from "./pages/user/ResetPassword";
 import SellerRegistration from "./pages/user/SellerRegistration";
 import Payment from "./pages/Payment";
+import CategoryManagement from "./pages/Category/Category";
 
 function App() {
   return (
@@ -29,6 +30,8 @@ function App() {
         <Route path="/userMe" element={<MyPage />} />
         <Route path="/orderitem" element={<OrderItem />} />
         <Route path="/payment" element={<Payment />} />
+
+        <Route path="/categoryManagement" element={<CategoryManagement />} />
 
         <Route path="/test" element={<AccordionTest />} />
       </Routes>
