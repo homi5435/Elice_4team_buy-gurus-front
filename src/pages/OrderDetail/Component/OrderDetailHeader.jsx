@@ -100,6 +100,11 @@ const InvoiceRegistration = ({ orderId, changeInvoice }) => {
           invoiceNum: invoiceNum,
         })
       })
+      .then((response) => {
+        if (!response.ok) return response.json().then(err => { throw err });
+        return;
+      })
+      .catch((err) => console.log(`${err.code}: ${err.message}`));
     handleClose();
   };
 
