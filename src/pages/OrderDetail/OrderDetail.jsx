@@ -18,15 +18,16 @@ const OrderDetail = () => {
   useEffect(() => {
     fetch(`/api/order/${orderId}`)
       .then(response => {
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) return response.json().then(err => {throw err});
         return response.json();
       })
       .then(data => {
+        data = data.data;
         const orderResponse = new OrderResponse(data)
         setOrderDetail(orderResponse)
         setShippingAddress(orderResponse.shippingAddress)
       })
-      .catch(err => console.log("err", err));
+      .catch((err) => console.log(`${err.code}: ${err.message}`));
   }, []);
 
   useEffect(() => {

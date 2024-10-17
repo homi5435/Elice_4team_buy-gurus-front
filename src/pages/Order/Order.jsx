@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Card, Row, Col, Button,Image, Collapse, Modal } from "react-bootstrap";
+import { Card, Row, Col, Button,Image, Collapse, Modal, Container, Badge } from "react-bootstrap";
 import {OrderResponse} from "@/objects/OrderResponse";
 import Pagenation from "@/components/Pagenation";
 import Header from "@/components/Header";
@@ -11,7 +11,7 @@ const Order = () => {
   return (
     <div>
       <Header />
-      <OrderedItemList type={type} />
+      <OrderedItemList type={type ? type : "c"} />
     </div>
   )
 }
@@ -28,12 +28,11 @@ const OrderedItemList = ({ type }) => {
   useEffect(() => {
     fetch(`/api/order?type=${type}&page=${page}`)
       .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        if (!response.ok) return response.json().then(err => {throw err});
         return response.json();
       })
       .then(data => {
+        data = data.data;
         setTotalPage(data.pages === 0 ? 0 : data.pages);
         setOrders(data.orderList.map(order => new OrderResponse(order)));
         if ((data.pages !== 0) && (page > data.pages)) {
@@ -41,9 +40,7 @@ const OrderedItemList = ({ type }) => {
         }
         setLoading(false);
       })
-      .catch(err => {
-        console.log(err);
-      });
+      .catch((err) => console.log(`${err.code}: ${err.message}`));
   }, [page, deleteFlag]);
 
   const pageChangeHandler = (page) => {
@@ -68,53 +65,69 @@ const OrderedItemList = ({ type }) => {
     closeModalHandler();
   }
 
+  const deleteBtnClickHandler = (e, order) => {
+    e.preventDefault()
+    setDeleteOrderId(order.orderId);
+    setShowDeleteModal(true);
+  }
+
   const closeModalHandler = () => {
     setShowDeleteModal(false);
   }
 
   return (
     
-      <div className="order-list-container" style={{ margin: '0 auto', width: '100%', maxWidth: "600px", minWidth: "600px"}}>
-        {(orders.length > 0) && !loading && 
-          <>
-            <ul style={{ listStyleType: "none", paddingLeft: 0}}>
-            { 
-              !loading && orders.map((order) => {
-                const orderList = order.orderInfoList
-                return (
-                  <li key={order.orderId} style={{ marginBottom: '15px', textDecoration: 'none' }}>
-                    <Link to={`/order/${order.orderId}`} className="text-decoration-none">
-                      <Card>
-                        <Card.Header>
-                          <div className="d-flex justify-content-between align-items-start">
-                            <h4>{order.status}</h4>
-                            <Button variant="outline-secondary"
-                              className="btn x-button"
-                              size="sm"
-                              onClick={(e) => {
-                                e.preventDefault()
-                                setDeleteOrderId(order.orderId);
-                                setShowDeleteModal(true);
-                              }}
-                            >X</Button>
-                          </div>
-                          <small className="text-muted">{order.createdAt}</small>
-                        </Card.Header>
-                        <Card.Body>
-                        <MultipleItemLayout items={orderList} shippingFee={order.shippingFee} />
-                        </Card.Body>
-                      </Card>
-                    </Link>
-                  </li>
-                )
-              })
-            }
-            </ul>
-            <DeleteModal showModal={showDeleteModal} handleCloseModal={closeModalHandler} handleDeleteButton={deleteOrderHandler}/>
-            <Pagenation totalPage={totalPage} changeHandler={pageChangeHandler}/>
-          </>
-        } 
-      </div>
+      <Container className="py-4" style={{ margin: '0 auto', width: '100%', maxWidth: "600px", minWidth: "600px"}}>
+        <Card className="border-0 shadow-sm">
+          <Card.Header className="bg-white border-bottom d-flex align-items-center p-3">
+            <h5 className="mb-0">
+              {type === "s" ? (
+                <Badge bg="info" className="fs-6 py-2 px-3">판매 내역</Badge>
+              ) : (
+                <Badge bg="primary" className="fs-6 py-2 px-3">주문 내역</Badge>
+              )}
+            </h5>
+          </Card.Header>
+          <Card.Body className="p-3">
+            {
+              (orders.length > 0) && !loading && 
+              <>
+                <ul style={{ listStyleType: "none", paddingLeft: 0}}>
+                { 
+                  !loading && orders.map((order) => {
+                    const orderList = order.orderInfoList
+                    return (
+                      <li key={order.orderId} style={{ marginBottom: '15px', textDecoration: 'none' }}>
+                        <Link to={`/order/${order.orderId}`} className="text-decoration-none">
+                          <Card>
+                            <Card.Header>
+                              <div className="d-flex justify-content-between align-items-start">
+                                <h4>{order.status}</h4>
+                                <Button variant="outline-secondary"
+                                  className="btn x-button"
+                                  size="sm"
+                                  onClick={(e) => deleteBtnClickHandler(e, order)}
+                                >X</Button>
+                              </div>
+                              <small className="text-muted">{order.createdAt}</small>
+                            </Card.Header>
+                            <Card.Body>
+                              <MultipleItemLayout items={orderList} shippingFee={order.shippingFee} />
+                            </Card.Body>
+                          </Card>
+                        </Link>
+                      </li>
+                    )
+                  })
+                }
+                </ul>
+                <DeleteModal showModal={showDeleteModal} handleCloseModal={closeModalHandler} handleDeleteButton={deleteOrderHandler}/>
+                <Pagenation totalPage={totalPage} changeHandler={pageChangeHandler}/>
+              </>
+            } 
+          </Card.Body>
+        </Card>
+      </Container>
   )
 }
 

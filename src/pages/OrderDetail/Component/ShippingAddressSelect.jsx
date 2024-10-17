@@ -44,7 +44,10 @@ const ShippingAddressSelect = ({
                           address: address.address
                         })
                       })
-                      .catch(err => console.log(err))
+                      .then(response => {
+                        if (!response.ok) return response.json().then(err => {throw err})
+                      })
+                      .catch((err) => console.log(`${err.code}: ${err.message}`))
                     handleModalClose();
                   }
                 }}
