@@ -1,7 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Outlet, Route, Routes } from "react-router-dom";
 import "./App.css";
-import Home from "./pages/Home";
+import Product from "./pages/Product/Product";
 import Signup from "./pages/user/Signup";
 import Login from "./pages/user/Login";
 import Order from "./pages/Order/Order";
@@ -11,13 +11,13 @@ import MyPage from "./pages/user/MyPage";
 import OrderItem from "./pages/OrderItem/OrderItem";
 import ResetPassword from "./pages/user/ResetPassword";
 import SellerRegistration from "./pages/user/SellerRegistration";
-import Payment from "./pages/Payment";
+import Payment from "./pages/OrderItem/Payment";
 
 function App() {
   return (
     <>
       <Routes>
-        <Route path="/home" element={<Home />} exact />
+        <Route path="/home" element={<Product />} exact />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/reset-password" element={<ResetPassword />} />

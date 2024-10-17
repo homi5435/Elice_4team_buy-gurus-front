@@ -1,7 +1,7 @@
 import {Tooltip, Modal, OverlayTrigger, ListGroup, Button} from "react-bootstrap";
-import "../css/shippingAddressMain.styles.css";
+import "../css/shippingAddressSelect.styles.css";
 
-const ShippingAddressMain = ({ 
+const ShippingAddressSelect = ({ 
   shippingAddressList, setData, orderId, handleModalClose,
   setSelectedIndex, setSelectedId, setModalPageNum, setIsAlertShown
 }) => {
@@ -31,20 +31,25 @@ const ShippingAddressMain = ({
             return (
               // action 때문에 button으로 바뀐다!
               <ListGroup.Item key={index} onClick={(e) => {
-                  setData(address)
-                  fetch(`/api/order/${orderId}/address`, {
-                      method: "PATCH",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        name: address.name,
-                        phoneNum: address.phoneNum,
-                        address: address.address
+                  if (setData !== null) {
+                    setData(address)
+                    fetch(`/api/order/${orderId}/address`, {
+                        method: "PATCH",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          name: address.name,
+                          phoneNum: address.phoneNum,
+                          address: address.address
+                        })
                       })
-                    })
-                    .catch(err => console.log(err))
-                  handleModalClose();
+                      .then(response => {
+                        if (!response.ok) return response.json().then(err => {throw err})
+                      })
+                      .catch((err) => console.log(`${err.code}: ${err.message}`))
+                    handleModalClose();
+                  }
                 }}
               >
                 <ShippingAddressDetail address={address}/>
@@ -92,4 +97,4 @@ const ShippingAddressDetail = ({address}) => {
   )
 }
 
-export default ShippingAddressMain;
+export default ShippingAddressSelect;

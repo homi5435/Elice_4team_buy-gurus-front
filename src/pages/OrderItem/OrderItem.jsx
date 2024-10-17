@@ -11,14 +11,16 @@ function OrderItem() {
 
   // 장바구니 조회
   useEffect(() => {
-    axios.get('/api/orderitem/1')
+    axios.get('/api/orderitem', {   
+      withCredentials: true
+  })
       .then(response => setOrderItem(response.data))
       .catch(error => console.log(error));
   }, []);
 
   // 총 수량 및 가격 계산
   const totalAmount = orderItems.reduce((acc, item) => item.selected ? acc + item.amount : acc, 0);
-  const totalPrice = orderItems.reduce((acc, item) => item.selected ? acc + item.price * item.amount : acc, 0);
+  const totalPrice = orderItems.reduce((acc, item) => item.selected ? acc + item.product.price * item.amount : acc, 0);
 
   // 선택 여부 토글 핸들러
   const handleSelectChange = (id) => {
@@ -44,7 +46,9 @@ function OrderItem() {
 
   // 전체 삭제 핸들러
   const handleDeleteAll = () => {
-    axios.delete('/api/orderitem/1')
+    axios.delete('/api/orderitem', {
+      withCredentials: true
+    })
       .then(() => {
         setOrderItem([]);
       })
@@ -79,10 +83,10 @@ function OrderItem() {
     )
   }
 
-  // 주문하기 핸들러
+  // 결제하기 핸들러
   const handlePayment = () => {
     handleUpdate();
-    alert("주문하기 페이지로 이동합니다.");
+    alert("결제하기 페이지로 이동합니다.");
     const selectedOrderItems = orderItems.filter((orderItem) => orderItem.selected)
     navigate('/Payment', { state: { selectedOrderItems } });
   };
@@ -110,7 +114,7 @@ function OrderItem() {
                 <Card.Body>
                   <Card.Title>{orderItem.product.name}</Card.Title>
                   <Card.Text>
-                    가격: {orderItem.price}₩
+                    가격: {orderItem.product.price}₩
                   </Card.Text>
                   <Form.Group className="input-group">
                     <Form.Control
@@ -168,7 +172,7 @@ function OrderItem() {
           </Col>
           <Col md={6} className="text-end">
             <Button variant="primary" onClick={handlePayment}>
-              주문하기
+              결제하기
             </Button>
           </Col>
         </Row>
