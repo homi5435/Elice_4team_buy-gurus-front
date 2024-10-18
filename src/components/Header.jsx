@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import logo from '/public/Logo.PNG';
 
 const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -36,9 +37,7 @@ const Header = () => {
         <div className="container">
             <header className="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
                 <Link to="/home" className="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
-                    <svg className="bi me-2" width="40" height="32">
-                        <use xlinkHref="#bootstrap" />
-                    </svg>
+                    <img src={logo} alt="Logo" width="100" height="100" className="me-2" />  {/* 이미지 추가 */}
                     <span className="fs-4">Buy-Gurus</span>
                 </Link>
 
