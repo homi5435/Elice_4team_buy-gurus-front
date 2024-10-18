@@ -9,11 +9,17 @@ import DaumPostcode from "react-daum-postcode";
 function Payment() {
     const location = useLocation();
     const orderItems = location.state?.selectedOrderItems || [];
-    const shippingFee = 2000;
 
     // 총 수량 및 가격 계산
     const totalAmount = orderItems.reduce((acc, item) => item.selected ? acc + item.amount : acc, 0);
     const totalPrice = orderItems.reduce((acc, item) => item.selected ? acc + item.product.price * item.amount : acc, 0);
+
+    let shippingFee = 2500;
+
+    // 5만원 이상 배송비 무료
+    if(totalPrice > 50000){
+      shippingFee = 0;
+    }
 
     // 배송지 모달
     const [show, setShow] = useState(false);
