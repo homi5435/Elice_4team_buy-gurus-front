@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Button, Card, Form, Modal } from 'react-bootstrap';
 import Header from '/src/components/Header';
 import replace from '/src/assets/No_Image_Available.jpg';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import DaumPostcode from "react-daum-postcode";
 
-function Payment(){
+function Payment() {
     const location = useLocation();
     const orderItems = location.state?.selectedOrderItems || [];
     const shippingFee = 2000;
@@ -19,10 +20,16 @@ function Payment(){
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    // 주소 모달
+    const [showAddress, setShowAddress] = useState(false);
+    const handleAddressClose = () => setShowAddress(false);
+    const handleAddressShow = () => setShowAddress(true);
+
     // 배송지 입력
     const [tempShippingInfo, setTempShippingInfo] = useState({
       name: '',
       address: '',
+      detailAddress: '',
       phoneNum: ''
     });
 
@@ -42,7 +49,12 @@ function Payment(){
 
     // 배송지 저장 후 모달 닫기
     const handleSaveShippingInfo = () => {
-      setShippingInfo(tempShippingInfo);
+      const fullAddress = `${tempShippingInfo.address} | ${tempShippingInfo.detailAddress}`;
+      setShippingInfo({
+        name: tempShippingInfo.name,
+        address: fullAddress,
+        phoneNum: tempShippingInfo.phoneNum
+      });
       handleClose();
     };
 
@@ -54,15 +66,49 @@ function Payment(){
         productId: orderItem.product.id 
       }));
 
+      axios.post('/api/user/address', 
+        {
+          name: shippingInfo.name,
+          address: shippingInfo.address,
+          phoneNum: shippingInfo.phoneNum
+        },
+        {
+          withCredentials: true
+        });
+
       axios.post('/api/order', 
       {
         shippingFee: shippingFee,
         orderInfoList: orderInfoList,
-        shippingInfo: shippingInfo
+        shippingInfo: shippingInfo,
+        sellerId: 1 // orderItem.product.sellerId를 보낼 예정
       },
       {
         withCredentials: true
       });
+    };
+
+    // 주소 데이터 처리
+    const handleAddress = (data) => {
+      let fullAddress = data.address;
+      let extraAddress = ''; 
+
+      if (data.addressType === 'R') {
+        if (data.bname !== '') {
+          extraAddress += data.bname;
+        }
+        if (data.buildingName !== '') {
+          extraAddress += (extraAddress !== '' ? `, ${data.buildingName}` : data.buildingName);
+        }
+        fullAddress += (extraAddress !== '' ? ` (${extraAddress})` : '');
+      }
+
+      setTempShippingInfo((prevInfo) => ({
+        ...prevInfo,
+        address: fullAddress
+      }));
+
+      setShowAddress(false);
     };
 
     return (
@@ -103,7 +149,7 @@ function Payment(){
               {/* 모달 컴포넌트 */}
               <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                  <Modal.Title>배송지 정보 추가</Modal.Title>
+                  <Modal.Title>배송지 추가</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                   <Form>
@@ -127,6 +173,18 @@ function Payment(){
                         value={tempShippingInfo.address}
                         onChange={handleInputChange}
                       />
+                       <Button variant="warning" className="ms-auto" onClick={handleAddressShow}>주소 찾기</Button>
+                    </Form.Group>
+
+                    <Form.Group controlId="formDetailAddress" className="mt-3">
+                      <Form.Label>세부 주소</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="detailAddress"
+                        placeholder="세부 주소 입력"
+                        value={tempShippingInfo.detailAddress}
+                        onChange={handleInputChange}
+                      />
                     </Form.Group>
 
                     <Form.Group controlId="formPhoneNum" className="mt-3">
@@ -145,6 +203,16 @@ function Payment(){
                   <Button variant="primary" className="me-2" onClick={handleSaveShippingInfo}>저장</Button>
                   <Button variant="secondary" onClick={handleClose}>취소</Button>
                 </Modal.Footer>
+              </Modal>
+
+              {/* 주소 검색 모달 */}
+              <Modal show={showAddress} onHide={handleAddressClose}>
+                <Modal.Header closeButton>
+                  <Modal.Title>주소 찾기</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <DaumPostcode onComplete={handleAddress} />
+                </Modal.Body>
               </Modal>
 
               {/* 총 수량 및 총 가격 */}
