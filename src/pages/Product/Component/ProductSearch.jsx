@@ -1,16 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const ProductSearch = () => {
-    const [searchTerm, setSearchTerm] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [subCategories, setSubCategories] = useState([]);
+    const [selectedSubCategory, setSelectedSubCategory] = useState('');
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('/api/categories'); // 카테고리 API 호출
+                setCategories(response.data);
+            } catch (error) {
+                console.error('카테고리 정보를 가져오는 데 오류가 발생했습니다:', error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    const handleCategoryChange = (e) => {
+        const categoryId = e.target.value;
+        setSelectedCategory(categoryId);
+        
+        // 선택한 대분류에 따라 중분류 업데이트
+        const selectedCategory = categories.find(cat => cat.id.toString() === categoryId);
+        if (selectedCategory) {
+            setSubCategories(selectedCategory.subCategories);
+        } else {
+            setSubCategories([]);
+        }
+        setSelectedSubCategory(''); // 중분류 초기화
+    };
 
     const handleSearch = (e) => {
         e.preventDefault();
-        // 검색 로직 추가
-        console.log("Searching for: ", searchTerm);
+        console.log("Searching for: ", searchTerm, "in category: ", selectedCategory, "and subcategory: ", selectedSubCategory);
+        // 실제 검색 로직 추가
     };
 
     return (
         <form className="my-4" onSubmit={handleSearch}>
+            <select
+                className="form-control my-2"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+            >
+                <option value="">대분류 선택</option>
+                {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                        {category.name}
+                    </option>
+                ))}
+            </select>
+            {subCategories.length > 0 && (
+                <select
+                    className="form-control my-2"
+                    value={selectedSubCategory}
+                    onChange={(e) => setSelectedSubCategory(e.target.value)}
+                >
+                    <option value="">중분류 선택</option>
+                    {subCategories.map((subCategory) => (
+                        <option key={subCategory.id} value={subCategory.id}>
+                            {subCategory.name}
+                        </option>
+                    ))}
+                </select>
+            )}
             <input
                 type="text"
                 className="form-control"
@@ -18,6 +76,8 @@ const ProductSearch = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
+        
+            <button type="submit" className="btn btn-primary">검색</button>
         </form>
     );
 };

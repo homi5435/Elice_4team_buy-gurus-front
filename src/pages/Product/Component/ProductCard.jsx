@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import 'font-awesome/css/font-awesome.min.css';
 
 const ProductCard = ({ product }) => {
     const [reviews, setReviews] = useState([]);
     const [averageRating, setAverageRating] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -34,8 +36,12 @@ const ProductCard = ({ product }) => {
         return stars;
     };
 
+    const handleCardClick = () => {
+        navigate(`/product/${product.id}`);
+    };
+
     return (
-        <div className="card mb-3" style={{ maxWidth: "740px" }}> {/* 스타일 수정 */}
+        <div className="card mb-3" style={{ maxWidth: "740px", cursor: 'pointer' }} onClick={handleCardClick}> {/* 스타일 수정 */}
             <div className="row g-0">
                 <div className="col-md-4">
                     <img src={product.imageUrls[0]} className="img-fluid rounded-start" alt={product.name} /> {/* className 수정 */}
