@@ -13,6 +13,7 @@ import OrderItem from "./pages/OrderItem/OrderItem";
 import ResetPassword from "./pages/user/ResetPassword";
 import SellerRegistration from "./pages/user/SellerRegistration";
 import Payment from "./pages/OrderItem/Payment";
+import ProductCreate from "./pages/Product/ProductCreate";
 
 function App() {
   
@@ -34,6 +35,7 @@ function App() {
         <Route path="/payment" element={<Payment />} />
 
         <Route path="/test" element={<AccordionTest />} />
+        <Route path="/product-create" element={<ProductCreate />} />
       </Routes>
     </>
   );
