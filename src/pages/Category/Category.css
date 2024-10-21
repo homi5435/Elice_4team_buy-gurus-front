@@ -1,34 +1,46 @@
-.category-container p-4 {
+.category-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+
+.subcategoryContainer{
+  display: flex;
+  flex-direction: column;
+  padding-left: 180px;
 }
 
 .category-input {
-  width: 100%; /* 대분류의 너비를 설정 */
-  max-width: 500px; /* 대분류의 최대 너비 */
+  width: 100%; /* 대분류와 중분류 모두 부모 컨테이너의 너비를 차지하도록 설정 */
+  max-width: 900px; /* 대분류는 최대 500px */
   height: 40px;
   font-size: 16px;
   margin-bottom: 10px;
+}
 
+.bigCategory{
+  width: 500px;
+  padding-top: 10px;
 }
 
 .subcategory-input {
-  width: 80%; /* 중분류의 너비는 대분류보다 짧게 설정 */
-  max-width: 400px; /* 중분류의 최대 너비 */
-  height: 40px;
-  font-size: 16px;
-  margin-right: 40px; /* 중분류를 대분류보다 약간 안쪽으로 위치시키기 위해 마진 설정 */
+  max-width: 700px; /* 중분류는 최대 400px */
+  width: 80%;
+  font-size:16px;
   margin-bottom: 10px;
-
 }
-
-.button-group {
-  margin-top: 20px;
-}
-
-.centered-content {
+.addBigCategoryButton{
   display: flex;
-  justify-content: center;
+  justify-content: right; /* 생성 버튼을 중앙으로 정렬 */
+  margin-top: 10px;
+}
+
+
+.d-flex {
+  display: flex;
+  justify-content: center; /* 입력 창을 수평 중앙으로 배치 */
   align-items: center;
 }
