@@ -1,8 +1,21 @@
 import { useState } from "react";
-import { Form, Button, Container, Row, Col, Alert } from "react-bootstrap";
+import {
+  Form,
+  Button as BootstrapButton,
+  Container,
+  Row,
+  Col,
+  Alert,
+} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Header2 from "../../components/Header2";
+import Button from "../../components/Button";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Login() {
+  const nav = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -16,26 +29,10 @@ function Login() {
     };
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/login`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(loginData),
-        }
-      );
+      const response = await axios.post("/api/login", loginData);
 
-      if (response.ok) {
-        console.log("로그인 성공:");
-        window.location.href = "/home";
-      } else {
-        const errorData = await response.json();
-        console.error("로그인 실패:", errorData);
-        setError("로그인에 실패했습니다.");
-      }
+      console.log("로그인 성공:");
+      window.location.href = "/home";
     } catch (error) {
       console.error("로그인 요청 중 오류 발생:", error);
       setError("서버와의 통신 중 오류가 발생했습니다.");
@@ -46,15 +43,7 @@ function Login() {
     <Container>
       <Row className="justify-content-center">
         <Col xs={12} md={6}>
-          <a
-            href="./home"
-            className="d-flex align-items-center mb-3 mb-md-4 me-md-auto text-dark text-decoration-none"
-          >
-            <svg className="bi me-2" width="40" height="32">
-              <use xlinkHref="#bootstrap" />
-            </svg>
-            <span className="fs-4">Buy-Gurus</span>
-          </a>
+          <Header2 leftchild={<Button text={"<<"} onClick={() => nav(-1)} />} />
           <h2 className="mb-4">로그인</h2>
           {error && <Alert variant="danger">{error}</Alert>}
           <Form onSubmit={handleLogin}>
@@ -78,25 +67,25 @@ function Login() {
                 required
               />
             </Form.Group>
-            <Button variant="primary" type="submit" className="w-100">
+            <BootstrapButton variant="danger" type="submit" className="w-100">
               로그인
-            </Button>
+            </BootstrapButton>
           </Form>
           <div className="mt-3 d-flex justify-content-between">
             <a href="/reset-password">비밀번호를 잊어버리셨나요?</a>
             <a href="/signup">회원가입</a>
           </div>
           <div className="mt-4">
-            <Button
-              variant="outline-danger"
+            <BootstrapButton
+              variant="outline-primary"
               href={`${
                 import.meta.env.VITE_APP_BACKEND_URL
               }/oauth2/authorization/google`}
               className="w-100 mb-2"
             >
               Google 로그인
-            </Button>
-            <Button
+            </BootstrapButton>
+            <BootstrapButton
               variant="outline-success"
               href={`${
                 import.meta.env.VITE_APP_BACKEND_URL
@@ -104,8 +93,8 @@ function Login() {
               className="w-100 mb-2"
             >
               Naver 로그인
-            </Button>
-            <Button
+            </BootstrapButton>
+            <BootstrapButton
               variant="outline-warning"
               href={`${
                 import.meta.env.VITE_APP_BACKEND_URL
@@ -113,7 +102,7 @@ function Login() {
               className="w-100"
             >
               Kakao 로그인
-            </Button>
+            </BootstrapButton>
           </div>
         </Col>
       </Row>

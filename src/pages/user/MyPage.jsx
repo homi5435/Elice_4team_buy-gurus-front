@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import useEmailVerification from "../../hooks/UseEmailVerification";
+import axiosInstance from "../../utils/interceptors";
+import Header from "../../components/Header";
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState({
@@ -32,19 +35,9 @@ const MyPage = () => {
   // 사용자 정보를 불러오는 함수
   const fetchUserInfo = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/userMe`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
+      const response = await axiosInstance.get("/api/userMe");
+      const data = response.data.data;
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch user info");
-      }
-      const responseData = await response.json();
-      const data = responseData.data;
       setUserInfo({
         nickname: data.nickname,
         email: data.email,
@@ -67,24 +60,10 @@ const MyPage = () => {
     }
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/userMe`,
-        {
-          method: "PATCH",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            nickname: updatedInfo.nickname,
-            email: updatedInfo.email,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update user info");
-      }
+      const response = await axiosInstance.patch("/api/userMe", {
+        nickname: updatedInfo.nickname,
+        email: updatedInfo.email,
+      });
 
       setUserInfo({
         ...userInfo,
@@ -101,18 +80,8 @@ const MyPage = () => {
   // 회원탈퇴 요청 함수
   const handleDelete = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/userMe`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete user");
-      }
-
+      await axiosInstance.delete("/api/userMe");
+      window.location.href = "/login";
       alert("회원탈퇴가 완료되었습니다.");
       // 로그아웃 처리 등 추가 작업 필요
     } catch (error) {
@@ -125,8 +94,14 @@ const MyPage = () => {
     fetchUserInfo();
   }, []);
 
+  // updatedInfo.email이 변경될 때마다 useEmailVerification의 email 상태 업데이트
+  useEffect(() => {
+    setEmail(updatedInfo.email);
+  }, [updatedInfo.email, setEmail]);
+
   return (
     <div>
+      <Header />
       <h2>My Page</h2>
       <div>
         <label>닉네임: </label>
@@ -159,7 +134,7 @@ const MyPage = () => {
             <button
               type="button"
               onClick={sendVerificationCode}
-              disabled={isCodeSent || isEmailVerified}
+              disabled={isEmailVerified}
             >
               인증 코드 받기
             </button>
