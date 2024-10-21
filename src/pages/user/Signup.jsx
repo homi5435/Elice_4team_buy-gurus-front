@@ -51,7 +51,7 @@ const Signup = () => {
       const response = await axios.post("/api/signup", signupData);
 
       console.log("회원가입 성공");
-      window.location.href = "/login";
+      nav("/login");
     } catch (error) {
       console.error("회원가입 요청 중 오류 발생:", error);
       alert("서버와의 통신 중 오류가 발생했습니다.");

@@ -48,7 +48,7 @@ const ResetPassword = () => {
       const response = await axios.post("/api/reset-password", resetData);
 
       console.log("비밀번호 재설정 성공");
-      window.location.href = "/login";
+      nav("/login");
     } catch (error) {
       console.error("비밀번호 재설정 요청 중 오류 발생:", error);
       alert("서버와의 통신 중 오류가 발생했습니다.");
