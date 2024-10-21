@@ -6,20 +6,9 @@ import ProductManagement from './Component/ProductManagement';
 
 
 
-const Product = () => {
-    const [role, setRole] = useState('');
 
-    useEffect(() => {
-        const fetchUserInfo = async () => {
-            try{
-                const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/userMe`);
-                setRole(response.data.role);
-            } catch (error) {
-                console.error('사용자 정보를 가져오는 데 오류가 발생했습니다:', error);
-            }
-        };
-        fetchUserInfo();
-    },[]);
+const Product = () => {
+    
 
     return (
         <div className="container">
