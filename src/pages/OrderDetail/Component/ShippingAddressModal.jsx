@@ -19,15 +19,18 @@ const ShippingAddressModal = ({isOpen, orderId, onClose, setData}) => {
   useEffect(() => {
     fetch(`/api/user/address`)
       .then(response => {
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) return response.json().then(err => {throw err});
         return response.json();
       })
       .then(data => {
+        data = data.data;
         const datas = [];
         data.addressInfoDetailList.map(addressInfo => datas.push(new AddressList(addressInfo)));
         setShippingAddressList(datas);
       })
-      .catch(err => console.log(err));
+      .catch((err) => {
+        console.log(`${err.code}: ${err.message}`);
+      })
   }, [])
 
   const handleModalClose = () => {
@@ -136,9 +139,12 @@ const AlertAddressDelete = ({addressId, isShow, setShow, addressIndex, removeHan
   const handleDeleteBtn = () => {
     fetch(`/api/user/address/${addressId}`, {
       "method": "DELETE",
-    }).then(response => {
-      removeHandler(addressIndex);
     })
+      .then(response => {
+        if (!response.ok) return response.json().then(err => {throw err})
+        removeHandler(addressIndex);
+      })
+      .catch((err) => console.log(`${err.code}: ${err.message}`));
     setShow(false);
   }
 
