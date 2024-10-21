@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import useEmailVerification from "../../hooks/UseEmailVerification";
+import axiosInstance from "../../utils/interceptors";
+import Header from "../../components/Header";
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState({
@@ -14,90 +18,37 @@ const MyPage = () => {
     nickname: "",
     email: "",
   });
-  const [isCodeSent, setIsCodeSent] = useState(false);
-  const [code, setCode] = useState("");
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
+
   const [message, setMessage] = useState("");
+
+  const {
+    email,
+    setEmail,
+    code,
+    setCode,
+    isCodeSent,
+    sendVerificationCode,
+    verifyCode,
+    isEmailVerified,
+  } = useEmailVerification(setMessage);
 
   // 사용자 정보를 불러오는 함수
   const fetchUserInfo = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/userMe`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch user info");
-      }
-      const data = await response.json();
-      setUserInfo(data);
+      const response = await axiosInstance.get("/api/userMe");
+      const data = response.data.data;
+
+      setUserInfo({
+        nickname: data.nickname,
+        email: data.email,
+        role: data.role,
+      });
       setUpdatedInfo({
         nickname: data.nickname,
         email: data.email,
       });
     } catch (error) {
       console.error("Failed to fetch user info:", error);
-    }
-  };
-
-  // 인증 코드 전송 함수
-  const handleSendVerificationCode = async () => {
-    try {
-      const response = await fetch(
-        `${
-          import.meta.env.VITE_APP_BACKEND_URL
-        }/api/auth/send-verification-email?email=${updatedInfo.email}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.ok) {
-        setIsCodeSent(true);
-        setMessage("인증 코드가 이메일로 전송되었습니다.");
-      } else {
-        setMessage("인증 코드 전송에 실패했습니다. 다시 시도해주세요.");
-      }
-    } catch (error) {
-      console.error("이메일 인증 코드 전송 오류:", error);
-      setMessage("서버와의 통신 중 오류가 발생했습니다.");
-    }
-  };
-
-  // 인증 코드 검증 함수
-  const handleVerifyCode = async () => {
-    const verifyData = {
-      email: updatedInfo.email,
-      code: code,
-    };
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/api/auth/verify-code`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(verifyData),
-        }
-      );
-
-      if (response.ok) {
-        setIsEmailVerified(true);
-        setMessage("이메일 인증이 완료되었습니다.");
-      } else {
-        setMessage("인증 코드가 일치하지 않습니다.");
-      }
-    } catch (error) {
-      console.error("인증 코드 검증 오류:", error);
-      setMessage("서버와의 통신 중 오류가 발생했습니다.");
     }
   };
 
@@ -109,24 +60,10 @@ const MyPage = () => {
     }
 
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/userMe`,
-        {
-          method: "PATCH",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            nickname: updatedInfo.nickname,
-            email: updatedInfo.email,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update user info");
-      }
+      const response = await axiosInstance.patch("/api/userMe", {
+        nickname: updatedInfo.nickname,
+        email: updatedInfo.email,
+      });
 
       setUserInfo({
         ...userInfo,
@@ -143,18 +80,8 @@ const MyPage = () => {
   // 회원탈퇴 요청 함수
   const handleDelete = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/userMe`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete user");
-      }
-
+      await axiosInstance.delete("/api/userMe");
+      window.location.href = "/login";
       alert("회원탈퇴가 완료되었습니다.");
       // 로그아웃 처리 등 추가 작업 필요
     } catch (error) {
@@ -167,8 +94,14 @@ const MyPage = () => {
     fetchUserInfo();
   }, []);
 
+  // updatedInfo.email이 변경될 때마다 useEmailVerification의 email 상태 업데이트
+  useEffect(() => {
+    setEmail(updatedInfo.email);
+  }, [updatedInfo.email, setEmail]);
+
   return (
     <div>
+      <Header />
       <h2>My Page</h2>
       <div>
         <label>닉네임: </label>
@@ -200,8 +133,8 @@ const MyPage = () => {
             />
             <button
               type="button"
-              onClick={handleSendVerificationCode}
-              disabled={isCodeSent || isEmailVerified}
+              onClick={sendVerificationCode}
+              disabled={isEmailVerified}
             >
               인증 코드 받기
             </button>
@@ -214,7 +147,7 @@ const MyPage = () => {
                   onChange={(e) => setCode(e.target.value)}
                   required
                 />
-                <button type="button" onClick={handleVerifyCode}>
+                <button type="button" onClick={verifyCode}>
                   인증 코드 확인
                 </button>
               </>

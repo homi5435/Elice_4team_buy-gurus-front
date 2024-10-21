@@ -4,6 +4,7 @@ import * as path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  assetsInclude: ['**/*.PNG'], // 로고 이미지 추가
   plugins: [react()],
   resolve: {
     alias:{
