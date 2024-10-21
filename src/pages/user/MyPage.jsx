@@ -3,8 +3,11 @@ import axios from "axios";
 import useEmailVerification from "../../hooks/UseEmailVerification";
 import axiosInstance from "../../utils/interceptors";
 import Header from "../../components/Header";
+import { useNavigate } from "react-router-dom";
 
 const MyPage = () => {
+  const nav = useNavigate();
+
   const [userInfo, setUserInfo] = useState({
     nickname: "",
     email: "",
@@ -72,6 +75,7 @@ const MyPage = () => {
       });
       setIsEditing({ nickname: false, email: false });
       setMessage("수정이 완료되었습니다.");
+      nav(0);
     } catch (error) {
       console.error("Failed to update user info:", error);
     }
@@ -81,9 +85,8 @@ const MyPage = () => {
   const handleDelete = async () => {
     try {
       await axiosInstance.delete("/api/userMe");
-      window.location.href = "/login";
+      nav("/home", { replace: true });
       alert("회원탈퇴가 완료되었습니다.");
-      // 로그아웃 처리 등 추가 작업 필요
     } catch (error) {
       console.error("Failed to delete user:", error);
     }
@@ -163,9 +166,7 @@ const MyPage = () => {
       <div>
         <label>권한: </label>
         <span>{userInfo.role}</span>
-        <button onClick={() => alert("판매자 등록 요청을 보냈습니다.")}>
-          판매자 등록
-        </button>
+        <button onClick={() => nav("/seller-registration")}>판매자 등록</button>
       </div>
 
       <button onClick={handleUpdate}>수정하기</button>

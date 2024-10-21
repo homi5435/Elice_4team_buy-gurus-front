@@ -32,7 +32,7 @@ function Login() {
       const response = await axios.post("/api/login", loginData);
 
       console.log("로그인 성공:");
-      window.location.href = "/home";
+      nav("/home", { replace: true });
     } catch (error) {
       console.error("로그인 요청 중 오류 발생:", error);
       setError("서버와의 통신 중 오류가 발생했습니다.");
