@@ -1,6 +1,7 @@
 import {Tooltip, Modal, OverlayTrigger, ListGroup, Button} from "react-bootstrap";
+import "../css/shippingAddressSelect.styles.css";
 
-const ShippingAddressMain = ({ 
+const ShippingAddressSelect = ({ 
   shippingAddressList, setData, orderId, handleModalClose,
   setSelectedIndex, setSelectedId, setModalPageNum, setIsAlertShown
 }) => {
@@ -19,7 +20,7 @@ const ShippingAddressMain = ({
             placement="right"
             overlay={renderTooltip}
           >
-            <span style={{ cursor: 'pointer', marginLeft: '5px'}}>🔍</span>
+            <span className="inspect-trigger">🔍</span>
           </OverlayTrigger>
         </Modal.Title>
       </Modal.Header>
@@ -28,21 +29,27 @@ const ShippingAddressMain = ({
         {
           shippingAddressList.map((address, index) => {
             return (
-              <ListGroup.Item key={index} action onClick={(e) => {
-                  setData(address)
-                  fetch(`/api/order/${orderId}/address`, {
-                      method: "PATCH",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({
-                        name: address.name,
-                        phoneNum: address.phoneNum,
-                        address: address.address
+              // action 때문에 button으로 바뀐다!
+              <ListGroup.Item key={index} onClick={(e) => {
+                  if (setData !== null) {
+                    setData(address)
+                    fetch(`/api/order/${orderId}/address`, {
+                        method: "PATCH",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          name: address.name,
+                          phoneNum: address.phoneNum,
+                          address: address.address
+                        })
                       })
-                    })
-                    .catch(err => console.log(err))
-                  handleModalClose();
+                      .then(response => {
+                        if (!response.ok) return response.json().then(err => {throw err})
+                      })
+                      .catch((err) => console.log(`${err.code}: ${err.message}`))
+                    handleModalClose();
+                  }
                 }}
               >
                 <ShippingAddressDetail address={address}/>
@@ -67,12 +74,7 @@ const ShippingAddressMain = ({
           })
         }
         </ListGroup>
-        <div style={{
-                position: 'sticky',
-                bottom: '20px',
-                textAlign: 'right',
-                zIndex: 1000,
-            }}>
+        <div className="address-append-btn">
           <Button className="me-3" onClick={() => setModalPageNum(1)}>
             배송지 추가
           </Button>
@@ -95,4 +97,4 @@ const ShippingAddressDetail = ({address}) => {
   )
 }
 
-export default ShippingAddressMain;
+export default ShippingAddressSelect;

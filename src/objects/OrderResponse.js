@@ -3,19 +3,29 @@ class OrderResponse {
     this.orderId = data.orderId;
     this.createdAt = data.createdAt.split(".")[0].replace("T", " ");
     this.status = data.status;
-    this.invoiceNum = data.invoiceNum;
+    this.invoice = new Invoice(data.invoice);
     this.shippingFee = data.shippingFee;
     this.orderInfoList = data.orderInfoList.map(data => new OrderInfo(data));
     this.shippingAddress = new ShippingAddress(data.shippingAddress)
   }
 }
 
+class Invoice {
+  constructor(invoiceInfo) {
+    this.invoiceNum = invoiceInfo.invoiceNum;
+    this.shippingCompany = invoiceInfo.shippingCompany;
+  }
+}
+
 class OrderInfo {
+  static errorImage = "https://cdn.pixabay.com/photo/2013/07/13/12/09/sign-159285_1280.png";
   constructor(orderInfo) {
     this.productId = orderInfo.productId;
     this.price = orderInfo.price;
     this.quantity = orderInfo.quantity;
-    this.imageUrl = orderInfo.imageUrl ? orderInfo.imageUrl : "https://cdn.pixabay.com/photo/2013/07/13/12/09/sign-159285_1280.png";
+    this.name = orderInfo.name;
+    this.imageUrl = orderInfo.imageUrl ? orderInfo.imageUrl : OrderInfo.errorImage
+    this.reviewed = orderInfo.reviewed;
   }
 }
 

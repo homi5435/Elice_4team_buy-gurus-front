@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import useEmailVerification from "../../hooks/UseEmailVerification";
+import axiosInstance from "../../utils/interceptors";
+import Header from "../../components/Header";
 
 const MyPage = () => {
   const [userInfo, setUserInfo] = useState({
@@ -15,21 +19,30 @@ const MyPage = () => {
     email: "",
   });
 
+  const [message, setMessage] = useState("");
+
+  const {
+    email,
+    setEmail,
+    code,
+    setCode,
+    isCodeSent,
+    sendVerificationCode,
+    verifyCode,
+    isEmailVerified,
+  } = useEmailVerification(setMessage);
+
   // 사용자 정보를 불러오는 함수
   const fetchUserInfo = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/userMe`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch user info");
-      }
-      const data = await response.json();
-      setUserInfo(data);
+      const response = await axiosInstance.get("/api/userMe");
+      const data = response.data.data;
+
+      setUserInfo({
+        nickname: data.nickname,
+        email: data.email,
+        role: data.role,
+      });
       setUpdatedInfo({
         nickname: data.nickname,
         email: data.email,
@@ -41,25 +54,16 @@ const MyPage = () => {
 
   // 닉네임과 이메일을 수정하는 함수
   const handleUpdate = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/userMe`,
-        {
-          method: "PATCH",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            nickname: updatedInfo.nickname,
-            email: updatedInfo.email,
-          }),
-        }
-      );
+    if (isEditing.email && !isEmailVerified) {
+      setMessage("이메일 인증을 완료해야 수정할 수 있습니다.");
+      return;
+    }
 
-      if (!response.ok) {
-        throw new Error("Failed to update user info");
-      }
+    try {
+      const response = await axiosInstance.patch("/api/userMe", {
+        nickname: updatedInfo.nickname,
+        email: updatedInfo.email,
+      });
 
       setUserInfo({
         ...userInfo,
@@ -67,7 +71,7 @@ const MyPage = () => {
         email: updatedInfo.email,
       });
       setIsEditing({ nickname: false, email: false });
-      alert("수정이 완료되었습니다.");
+      setMessage("수정이 완료되었습니다.");
     } catch (error) {
       console.error("Failed to update user info:", error);
     }
@@ -76,18 +80,8 @@ const MyPage = () => {
   // 회원탈퇴 요청 함수
   const handleDelete = async () => {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_APP_BACKEND_URL}/userMe`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete user");
-      }
-
+      await axiosInstance.delete("/api/userMe");
+      window.location.href = "/login";
       alert("회원탈퇴가 완료되었습니다.");
       // 로그아웃 처리 등 추가 작업 필요
     } catch (error) {
@@ -100,8 +94,14 @@ const MyPage = () => {
     fetchUserInfo();
   }, []);
 
+  // updatedInfo.email이 변경될 때마다 useEmailVerification의 email 상태 업데이트
+  useEffect(() => {
+    setEmail(updatedInfo.email);
+  }, [updatedInfo.email, setEmail]);
+
   return (
     <div>
+      <Header />
       <h2>My Page</h2>
       <div>
         <label>닉네임: </label>
@@ -123,13 +123,36 @@ const MyPage = () => {
       <div>
         <label>이메일: </label>
         {isEditing.email ? (
-          <input
-            type="email"
-            value={updatedInfo.email}
-            onChange={(e) =>
-              setUpdatedInfo({ ...updatedInfo, email: e.target.value })
-            }
-          />
+          <>
+            <input
+              type="email"
+              value={updatedInfo.email}
+              onChange={(e) =>
+                setUpdatedInfo({ ...updatedInfo, email: e.target.value })
+              }
+            />
+            <button
+              type="button"
+              onClick={sendVerificationCode}
+              disabled={isEmailVerified}
+            >
+              인증 코드 받기
+            </button>
+            {isCodeSent && !isEmailVerified && (
+              <>
+                <label>인증 코드:</label>
+                <input
+                  type="text"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  required
+                />
+                <button type="button" onClick={verifyCode}>
+                  인증 코드 확인
+                </button>
+              </>
+            )}
+          </>
         ) : (
           <span onClick={() => setIsEditing({ ...isEditing, email: true })}>
             {userInfo.email}
@@ -147,6 +170,7 @@ const MyPage = () => {
 
       <button onClick={handleUpdate}>수정하기</button>
       <button onClick={handleDelete}>회원탈퇴</button>
+      {message && <p>{message}</p>}
     </div>
   );
 };

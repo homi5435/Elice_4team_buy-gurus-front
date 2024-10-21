@@ -1,10 +1,11 @@
 import {useState, useEffect} from "react";
 import { useParams } from "react-router-dom";
-import OrderDetailHeader from "./Component/OrderDetailHeader";
-import OrderAddressInfo from "./Component/OrderAddressInfo";
-import OrderDetailDrawer from "./Component/OrderDetailDrawer";
-import ShippingAddressModal from "./Component/ShippingAddressModal";
+import OrderDetailHeader from "./component/OrderDetailHeader";
+import OrderAddressInfo from "./component/OrderAddressInfo";
+import OrderDetailDrawer from "./component/OrderDetailDrawer";
+import ShippingAddressModal from "./component/ShippingAddressModal";
 import {OrderResponse} from "@/objects/OrderResponse"
+import "./orderDetail.styles.css"
 
 const OrderDetail = () => {
   const [ orderDetail, setOrderDetail ] = useState(null);
@@ -17,15 +18,16 @@ const OrderDetail = () => {
   useEffect(() => {
     fetch(`/api/order/${orderId}`)
       .then(response => {
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) return response.json().then(err => {throw err});
         return response.json();
       })
       .then(data => {
+        data = data.data;
         const orderResponse = new OrderResponse(data)
         setOrderDetail(orderResponse)
         setShippingAddress(orderResponse.shippingAddress)
       })
-      .catch(err => console.log("err", err));
+      .catch((err) => console.log(`${err.code}: ${err.message}`));
   }, []);
 
   useEffect(() => {
@@ -36,9 +38,18 @@ const OrderDetail = () => {
 
   const closeModal = () => setIsModalOpen(false);
 
+  const updateOrderDetail = (updateVal, type) => {
+    if (orderDetail) {
+
+      if (type === "shipping") {
+        setOrderDetail((prev) => {return {...prev, ...updateVal}})
+      }
+    }
+  }
+
   return (
-    <div style={{ width: "100%", margin: '0 auto', maxWidth: "600px", minWidth: "600px"}}>
-      { !loading && <OrderDetailHeader orderId={orderId} orderDetail={orderDetail} /> }
+    <div className="order-detail">
+      { !loading && <OrderDetailHeader orderId={orderId} orderDetail={orderDetail} updateOrderDetail={updateOrderDetail} /> }
       { !loading && <OrderAddressInfo shippingAddress={shippingAddress} orderStatus={orderDetail.status} modalOpenHandler={setIsModalOpen} />}  
 
       <ShippingAddressModal orderId={orderId} isOpen={isModalOpen} onClose={closeModal} setData={setShippingAddress}/>
