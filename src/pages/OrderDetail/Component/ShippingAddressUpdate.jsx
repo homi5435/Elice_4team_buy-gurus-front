@@ -30,10 +30,15 @@ const ShippingAddressUpdate = ({ addressList, index, apiData, setModalPageNum, s
       address: `${address}|${addressDetail}`
     }
     fetch(`/api/user/address/${addressList[index].id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...addressList[index] })
-    })
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...addressList[index] })
+      })
+      .then(response => {
+        if(!response.ok) return response.json().then(err => {throw err});
+        return;
+      })
+      .catch((err) => console.log(`${err.code}: ${err.message}`));
     setAddressList(addressList);
 
     setModalPageNum(0);

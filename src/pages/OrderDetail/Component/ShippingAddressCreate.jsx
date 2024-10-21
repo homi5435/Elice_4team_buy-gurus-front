@@ -19,9 +19,14 @@ const ShippingAddressCreate = ({ apiData, setIsPostapiShown, setModalPageNum, in
       phoneNum: phoneNum,
     }
     fetch(`/api/user/address`, {method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(addressData)
-    })
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(addressData)
+      })
+      .then(response => {
+        if (!response.ok) return response.json().then(err => {throw err})
+          return;
+      })
+      .catch((err) => console.log(`${err.code}: ${err.message}`));
     appendShippingAddress(addressData);
     initModalData();
     setModalPageNum(0);

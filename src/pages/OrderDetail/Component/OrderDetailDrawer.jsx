@@ -25,13 +25,13 @@ const OrderDetailDrawer = ({ orderDetail }) => {
                   </Col>
                   <Col xs={8} md={9}>
                     <Card.Text>
-                      <a href="https://www.naver.com">to data!</a>
+                      <a href="https://www.naver.com">{ info?.name }</a>
                     </Card.Text>
                     <Card.Text>
-                      <strong>가격:</strong> {info.price.toLocaleString()}원
+                      <strong>가격:</strong> {info?.price?.toLocaleString()}원
                     </Card.Text>
                     <Card.Text>
-                      <strong>수량:</strong> {info.quantity.toLocaleString()}개
+                      <strong>수량:</strong> {info?.quantity?.toLocaleString()}개
                     </Card.Text>
                   </Col>
                 </Row>  
