@@ -5,7 +5,22 @@ import "../css/orderDetailHeader.styles.css";
 const OrderDetailHeader = ({ orderId, orderDetail, updateOrderDetail }) => {
   const [badgeColor, setBadgeColor] = useState("");
   const [invoiceNum, setInvoiceNum] = useState(null);
+  const [isSeller, setIsSeller] = useState(false);
   const [shippingCompany, setShippingCompany] = useState(null);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/userMe`, {
+        credentials: "include"
+      })
+      .then(response => {
+        if (!response.ok) return;
+        return response.json();
+      })
+      .then(data => {
+        const userData = data.data;
+        if (userData.role === "SELLER") setIsSeller(true);
+      })
+  })
 
   useEffect(() => {
     const invoice = orderDetail.invoice;
@@ -46,7 +61,7 @@ const OrderDetailHeader = ({ orderId, orderDetail, updateOrderDetail }) => {
             <small>{orderDetail.createdAt}</small>
           </div>
           <div>
-            <InvoiceRegistration orderId={orderId} changeInvoice={handleAppendInvoice}/>
+          { isSeller && <InvoiceRegistration orderId={orderId} changeInvoice={handleAppendInvoice}/> }
             <Badge bg={badgeColor} className="p-2">{orderDetail.status}</Badge>
           </div>
         </Card.Header>
@@ -92,7 +107,7 @@ const InvoiceRegistration = ({ orderId, changeInvoice }) => {
     if (hasError) return;
 
     changeInvoice(invoiceNum, shippingCompany)
-    fetch(`/api/order/${orderId}/invoice`, {
+    fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/order/${orderId}/invoice`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
