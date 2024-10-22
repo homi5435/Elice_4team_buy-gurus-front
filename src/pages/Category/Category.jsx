@@ -166,12 +166,12 @@ const CategoryManagement = () => {
               {categories.map((category) => (
                 <div key={category.id} className="mb-4">
                   {/* 대분류 */}
-                  <div className="d-flex flex-column">
-                    <div className="d-flex justify-content-center mb-2">
+                  <div className="d-flex mb-1">
+                    <div className="d-flex justify-content-center align-items-center mb-2 w-100">
                       <Button
                         variant="link"
                         onClick={() => toggleCategory(category.id)}
-                        className="me-2 align-self-start"
+                        className="me-2 flex-shrink-0" // 버튼의 크기를 고정
                       >
                         {category.isOpen ? (
                           <ChevronDown size={20} />
@@ -179,19 +179,18 @@ const CategoryManagement = () => {
                           <ChevronRight size={20} />
                         )}
                       </Button>
-                    </div>
 
-                    <div className="d-flex align-items-center justify-content-between mb-2">
                       <Form.Control
                         type="text"
                         readOnly
                         value={category.name}
-                        className="flex-grow-1 me-2"
+                        className="category-input me-2 flex-grow-1"
                       />
+
                       <Button
                         variant="danger"
                         onClick={() => openDeleteModal(category)}
-                        style={{ width: "70px", height: "40px" }}
+                        className="flex-shrink-0"
                       >
                         삭제
                       </Button>
@@ -205,18 +204,19 @@ const CategoryManagement = () => {
                         category.children.map((sub) => (
                           <div
                             key={sub.id}
-                            className="d-flex align-items-center justify-content-between mb-2"
+                            className="d-flex align-items-center justify-content-end mb-2"
                           >
                             <Form.Control
                               type="text"
                               readOnly
                               value={sub.name}
-                              className="flex-grow-1 me-2"
+                              className="flex-grow-0 me-2 mb-1"
+                              style={{ width: "70%" }}
                             />
                             <Button
                               variant="danger"
                               onClick={() => openDeleteModal(category, sub)}
-                              style={{ width: "70px", height: "40px" }}
+                              className="flex-shrink-0"
                             >
                               삭제
                             </Button>
