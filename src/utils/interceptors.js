@@ -1,9 +1,5 @@
 import axios from "axios";
 
-const axiosInstance = axios.create({
-  withCredentials: true,
-});
-
 axios.interceptors.response.use(
   (res) => {
     return res;
@@ -22,5 +18,3 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export default axiosInstance;
