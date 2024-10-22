@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../../utils/interceptors";
 import useEmailVerification from "../../hooks/UseEmailVerification";
 import Header from "../../components/Header";
 import { useNavigate } from "react-router-dom";
@@ -40,9 +40,7 @@ const MyPage = () => {
   // 사용자 정보를 불러오는 함수
   const fetchUserInfo = async () => {
     try {
-      const response = await axios.get("/api/userMe", {
-        withCredentials: true,
-      });
+      const response = await axios.get("/api/userMe");
       const data = response.data.data;
 
       setUserInfo({
@@ -67,16 +65,10 @@ const MyPage = () => {
     }
 
     try {
-      const response = await axios.patch(
-        "/api/userMe",
-        {
-          withCredentials: true,
-        },
-        {
-          nickname: updatedInfo.nickname,
-          email: updatedInfo.email,
-        }
-      );
+      const response = await axios.patch("/api/userMe", {
+        nickname: updatedInfo.nickname,
+        email: updatedInfo.email,
+      });
 
       setUserInfo({
         ...userInfo,
@@ -94,9 +86,7 @@ const MyPage = () => {
   // 회원탈퇴 요청 함수
   const handleDelete = async () => {
     try {
-      await axios.delete("/api/userMe", {
-        withCredentials: true,
-      });
+      await axios.delete("/api/userMe");
       nav("/home", { replace: true });
       alert("회원탈퇴가 완료되었습니다.");
     } catch (error) {
