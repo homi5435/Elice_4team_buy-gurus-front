@@ -11,6 +11,8 @@ const Header = () => {
   const [userName, setUserName] = useState("");
   const [role, setRole] = useState("");
 
+  const ADMIN = "ADMIN";
+
   // 로그인 조회
   useEffect(() => {
     axios
@@ -81,7 +83,7 @@ const Header = () => {
                     주문내역
                   </Link>
                 </li>
-                {role === "SELLER" && (
+                {role === ADMIN && (
                   <li className="nav-item">
                     <Link to="/order?type=s" className="nav-link">
                       판매내역
