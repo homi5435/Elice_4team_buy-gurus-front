@@ -9,14 +9,15 @@ const Header = () => {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
+  const [role, setRole] = useState("");
 
   // 로그인 조회
   useEffect(() => {
     axiosInstance
       .get("/api/userMe")
       .then((response) => {
-        console.log(response.data);
         setUserName(response.data.data.nickname);
+        setRole(response.data.data.role);
         setIsLoggedIn(true);
       })
       .catch((error) => console.log(error));
@@ -77,6 +78,11 @@ const Header = () => {
                     주문내역
                   </Link>
                 </li>
+                { role === "SELLER" && <li className="nav-item">
+                  <Link to="/order?type=s" className="nav-link">
+                    판매내역
+                  </Link>
+                </li> }
               </ul>
               <span className="me-3">{userName}</span>
               <button className="btn btn-danger" onClick={handleLogout}>
