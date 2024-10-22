@@ -3,10 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from "/public/Logo.PNG";
 import axiosInstance from "../utils/interceptors";
+import { useUserContext } from "../context/UserContext";
 
 const Header = () => {
   const nav = useNavigate();
-
+  const { setUser } = useUserContext();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
   const [role, setRole] = useState("");
@@ -16,6 +17,7 @@ const Header = () => {
     axiosInstance
       .get("/api/userMe")
       .then((response) => {
+        setUser(response.data.data);
         setUserName(response.data.data.nickname);
         setRole(response.data.data.role);
         setIsLoggedIn(true);
@@ -37,6 +39,8 @@ const Header = () => {
         console.log(response.data);
         setIsLoggedIn(false);
         setUserName("");
+        setRole("");
+        setUser(null);
         nav(0);
       })
       .catch((error) => console.log(error));

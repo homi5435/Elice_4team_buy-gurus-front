@@ -87,7 +87,7 @@ const ProductCreate = () => {
       data.append('imageFiles', file);
     });
 
-    axios.post('/api/product', data)
+    axios.post('/api/admin/product', data)
   };
 
   return (

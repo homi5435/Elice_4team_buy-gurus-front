@@ -40,7 +40,7 @@ const ProductDetail = () => {
                 // 요청 전 로깅
                 console.log('Fetching product with ID:', id);
                 
-                const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/product/${id}`, {
+                const response = await axios.get(`/api/product/${id}`, {
                     // 요청 설정 추가
                     validateStatus: function (status) {
                         return status < 500; // 500 미만의 상태 코드는 에러로 처리하지 않음
