@@ -1,16 +1,19 @@
 import {Card, Button} from "react-bootstrap";
+import useUserInfo from "@/hooks/useUserInfo";
 import "../css/orderAddressInfo.styles.css";
 
 
 const OrderAddressInfo = ({ shippingAddress, orderStatus, modalOpenHandler }) => {
-  const shippingUpdateBtnFlag = orderStatus === "준비중";
+  const userInfo = useUserInfo();
+  const btnShowFlag = (userInfo?.data?.role === "USER" ? true : false) && (orderStatus === "준비중");
+
   return (
     <div className="order-address-info">
       <Card className="shadow-sm mb-3">
         <Card.Header className="d-flex justify-content-between align-items-center bg-light">
           <Card.Title className="mb-0">배송지 정보</Card.Title>
           {
-            shippingUpdateBtnFlag && <Button
+            btnShowFlag && <Button
               variant="outline-primary"
               size="sm"
               onClick={() => modalOpenHandler(true)}
