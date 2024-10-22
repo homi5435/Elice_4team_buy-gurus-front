@@ -3,8 +3,8 @@ import { Outlet, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Product from "./pages/Product/Product";
 import ProductDetail from "./pages/Product/ProductDetail";
-import Signup from "./pages/Signup";
-import Login from "./pages/Login";
+import Signup from "./pages/user/Signup";
+import Login from "./pages/user/Login";
 import Order from "./pages/Order/Order";
 import OrderDetail from "./pages/OrderDetail/OrderDetail";
 import AccordionTest from "./pages/AccordionTest";
@@ -17,7 +17,6 @@ import Payment from "./pages/OrderItem/Payment";
 import ProductCreate from "./pages/Product/ProductCreate";
 
 function App() {
-  
   return (
     <>
       <Routes>
