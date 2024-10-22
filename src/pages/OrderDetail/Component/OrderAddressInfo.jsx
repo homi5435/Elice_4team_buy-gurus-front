@@ -1,10 +1,10 @@
 import {Card, Button} from "react-bootstrap";
-import useUserInfo from "@/hooks/useUserInfo";
+import { useUserContext } from "../../../context/UserContext";
 import "../css/orderAddressInfo.styles.css";
 
 
 const OrderAddressInfo = ({ shippingAddress, orderStatus, modalOpenHandler }) => {
-  const userInfo = useUserInfo();
+  const userInfo = useUserContext();
   const btnShowFlag = (userInfo?.data?.role === "USER" ? true : false) && (orderStatus === "준비중");
 
   return (
