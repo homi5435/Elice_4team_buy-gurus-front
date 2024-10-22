@@ -116,7 +116,16 @@ const ProductCreate = () => {
       data.append('imageFiles', file);
     });
 
-    axios.post('/api/product', data)
+    if (location.state && location.state.id){
+      axios.patch(`/api/product/${location.state.id}`, data)
+      alert("상품 수정이 완료되었습니다.");
+      navigate('/home');
+    }
+    else {
+      axios.post('/api/product', data)
+      alert("상품 추가가 완료되었습니다.");
+      navigate('/home');
+    }
   };
 
   // 취소 버튼 핸들러
