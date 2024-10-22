@@ -11,7 +11,6 @@ import AccordionTest from "./pages/AccordionTest";
 import MyPage from "./pages/user/MyPage";
 import OrderItem from "./pages/OrderItem/OrderItem";
 import ResetPassword from "./pages/user/ResetPassword";
-import SellerRegistration from "./pages/user/SellerRegistration";
 import CategoryManagement from "./pages/Category/Category";
 import Payment from "./pages/OrderItem/Payment";
 import ProductCreate from "./pages/Product/ProductCreate";
@@ -31,7 +30,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/seller-registration" element={<SellerRegistration />} />
 
         <Route path="/order" element={<Order />} />
         <Route path="/order/:orderId" element={<OrderDetail />} />
@@ -44,6 +42,8 @@ function App() {
 
         <Route path="/test" element={<AccordionTest />} />
         <Route path="/product-create" element={<ProductCreate />} />
+
+        <Route path="*" element={<Notfound />} />
       </Routes>
       </UserProvider>
     </>
