@@ -82,7 +82,7 @@ const ProductCreate = () => {
     data.append('price', formData.price);
     data.append('description', formData.description);
     data.append('quantity', formData.quantity);
-    data.append('category', formData.category);
+    data.append('categoryId', formData.category);
     formData.imageFiles.forEach((file) => {
       data.append('imageFiles', file);
     });
