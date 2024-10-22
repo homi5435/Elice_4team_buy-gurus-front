@@ -41,7 +41,7 @@ const OrderedItemList = ({ type }) => {
         setLoading(false);
       })
       .catch((err) => console.log(`${err.code}: ${err.message}`));
-  }, [page, deleteFlag]);
+  }, [type, page, deleteFlag]);
 
   const pageChangeHandler = (page) => {
     setPage(page);
