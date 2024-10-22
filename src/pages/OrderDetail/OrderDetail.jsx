@@ -6,6 +6,7 @@ import OrderDetailDrawer from "./component/OrderDetailDrawer";
 import ShippingAddressModal from "./component/ShippingAddressModal";
 import {OrderResponse} from "@/objects/OrderResponse"
 import "./orderDetail.styles.css"
+import Header from "@/components/Header";
 
 const OrderDetail = () => {
   const [ orderDetail, setOrderDetail ] = useState(null);
@@ -48,7 +49,9 @@ const OrderDetail = () => {
   }
 
   return (
-    <div className="order-detail">
+    <>
+      <Header />
+      <div className="order-detail">
       { !loading && <OrderDetailHeader orderId={orderId} orderDetail={orderDetail} updateOrderDetail={updateOrderDetail} /> }
       { !loading && <OrderAddressInfo shippingAddress={shippingAddress} orderStatus={orderDetail.status} modalOpenHandler={setIsModalOpen} />}  
 
@@ -56,6 +59,8 @@ const OrderDetail = () => {
 
       { !loading && <OrderDetailDrawer orderDetail={orderDetail} /> }
     </div>
+    </>
+
   )
 }
 
