@@ -79,7 +79,7 @@ const CategoryManagement = () => {
           setCategories([...categories, {
             id: response.data.id, // 서버에서 반환된 id 사용
             name: response.data.name, // 서버에서 반환된 name 사용
-            Children: response.data.children || [], // 하위 카테고리 설정
+            children: response.data.children || [], // 하위 카테고리 설정
             isOpen: false, // 기본값으로 카테고리 접힘 상태
           }]);
         }
