@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ReviewCard = ({ review, userInfo, onEdit, onDelete }) => {
+const ReviewCard = ({ review, user, onEdit, onDelete }) => {
     const handleEdit = () => {
         if (onEdit) {
             onEdit(review.id); // 리뷰 ID를 전달하여 수정 기능 호출
@@ -25,7 +25,7 @@ const ReviewCard = ({ review, userInfo, onEdit, onDelete }) => {
                 </div>
                 <div>
                     {/* 작성자 또는 관리자일 경우에만 버튼 표시 */}
-                    {(review.userId === userInfo.userId || userInfo.role === 'ADMIN') ? (
+                    {(review.userId === user.userId || user.role === 'ADMIN') ? (
                         <>
                             <button className="btn btn-secondary btn-sm me-2" onClick={handleEdit}>
                                 수정

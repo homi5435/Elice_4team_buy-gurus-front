@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ReviewForm from './Component/ReviewForm.jsx';
 import ReviewCard from './Component/ReviewCard.jsx';
-import useUserInfo from '../../hooks/useUserInfo.js';
 import 'bootstrap/dist/css/bootstrap.min.css'; // 부트스트랩 CSS 추가
 import { Pagination } from 'react-bootstrap';
 import EditReviewModal from './Component/EditReviewModal'; // 수정 모달 임포트
 import DeleteReviewModal from './Component/DeleteReviewModal'; // 삭제 모달 임포트
 import ConfirmEditModal from './Component/ConfirmEditModal'; // 수정 확인 모달 임포트
+import { useUserContext } from '../../context/UserContext.jsx';
 
 const ProductDetail = () => {
     const { id } = useParams(); // URL 파라미터에서 상품 ID 가져오기
+    const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true); // 로딩 상태 추가
     const [reviews, setReviews] = useState([]); // 리뷰 상태
@@ -23,26 +24,108 @@ const ProductDetail = () => {
     const [editReview, setEditReview] = useState(null); // 수정할 리뷰 정보
     const [mainImage, setMainImage] = useState(''); // 큰 이미지 상태
     const [quantity, setQuantity] = useState(1);
-    const userInfo = useUserInfo();
+    const [error, setError] = useState(null);
+    const { user } = useUserContext();
 
     useEffect(() => {
         const fetchProductDetail = async () => {
+            // ID 유효성 검사
+            if (!id || isNaN(Number(id))) {
+                setError('유효하지 않은 상품 ID입니다.');
+                setLoading(false);
+                return;
+            }
+
             try {
-                const response = await axios.get(`/api/product/${id}`);
-                setProduct(response.data);
-                if (response.data.imageUrls && response.data.imageUrls.length > 0) {
-                    setMainImage(response.data.imageUrls[0]);
+                // 요청 전 로깅
+                console.log('Fetching product with ID:', id);
+                
+                const response = await axios.get(`${import.meta.env.VITE_APP_BACKEND_URL}/api/product/${id}`, {
+                    // 요청 설정 추가
+                    validateStatus: function (status) {
+                        return status < 500; // 500 미만의 상태 코드는 에러로 처리하지 않음
+                    }
+                });
+
+                // 응답 로깅
+                console.log('Server response:', response);
+
+                if (response.status === 400) {
+                    throw new Error('잘못된 요청입니다. 상품 ID를 확인해주세요.');
                 }
+
+                if (response.status === 404) {
+                    throw new Error('상품을 찾을 수 없습니다.');
+                }
+
+                if (!response.data) {
+                    throw new Error('서버에서 데이터를 받지 못했습니다.');
+                }
+
+                setProduct(response.data);
+                setError(null);
+                
             } catch (error) {
-                console.error('상품 정보를 가져오는 데 오류가 발생했습니다:', error);
-                alert('상품 정보를 가져오는 데 오류가 발생했습니다.'); // 사용자에게 알림
+                console.error('상품 정보 조회 중 오류 발생:', error);
+                
+                // 자세한 에러 메시지 설정
+                let errorMessage = '상품 정보를 가져오는 데 실패했습니다.';
+                
+                if (error.response) {
+                    // 서버 응답이 있는 경우
+                    console.log('Error response:', error.response);
+                    switch (error.response.status) {
+                        case 400:
+                            errorMessage = '잘못된 요청입니다. 상품 ID를 확인해주세요.';
+                            break;
+                        case 401:
+                            errorMessage = '로그인이 필요합니다.';
+                            navigate('/login');
+                            break;
+                        case 403:
+                            errorMessage = '접근 권한이 없습니다.';
+                            break;
+                        case 404:
+                            errorMessage = '상품을 찾을 수 없습니다.';
+                            break;
+                        default:
+                            errorMessage = `서버 오류가 발생했습니다. (${error.response.status})`;
+                    }
+                } else if (error.request) {
+                    // 요청은 보냈으나 응답을 받지 못한 경우
+                    errorMessage = '서버에서 응답이 없습니다. 네트워크 연결을 확인해주세요.';
+                }
+                
+                setError(errorMessage);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchProductDetail();
-    }, [id]);
+    }, [id, navigate]);
+
+    if (loading) {
+        return <div className="text-center">로딩 중...</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="alert alert-danger" role="alert">
+                <h4 className="alert-heading">오류 발생</h4>
+                <p>{error}</p>
+                <hr />
+                <p className="mb-0">
+                    <button 
+                        className="btn btn-outline-danger"
+                        onClick={() => navigate(-1)}
+                    >
+                        이전 페이지로 돌아가기
+                    </button>
+                </p>
+            </div>
+        );
+    }
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -121,6 +204,12 @@ const ProductDetail = () => {
 
     return (
         <div className="container mt-4">
+            {/* DeleteProduct 컴포넌트 추가 */}
+            <DeleteProduct 
+                productId={id}
+                user={user}
+                sellerId={product?.sellerUserId} // 상품 판매자 ID
+            />
             <h1>{product.name}</h1>
             {mainImage && (
                 <img src={mainImage} alt={product.name} className="img-fluid mb-3" />
@@ -163,7 +252,7 @@ const ProductDetail = () => {
                     <div className="col-md-4" key={review.id}>
                         <ReviewCard 
                             review={review} 
-                            userInfo={userInfo} 
+                            user={user} 
                             onEdit={handleEditReview} 
                             onDelete={handleDeleteReview} 
                         />

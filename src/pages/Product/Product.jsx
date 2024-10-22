@@ -1,17 +1,26 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import ProductSearch from "./Component/ProductSearch";
-import ProductList from "./Component/ProductList";
-import ProductManagement from "./Component/ProductManagement";
+import React from 'react';
+import ProductSearch from './Component/ProductSearch';
+import ProductList from './Component/ProductList';
+import ProductManagement from './Component/ProductManagement';
+import { ProductProvider } from '../../context/ProductContext';
+import Header from '/src/components/Header';
+import { useUserContext } from '../../context/UserContext';
 
 const Product = () => {
-  return (
-    <div className="container">
-      <ProductManagement role={role} />
-      <ProductSearch />
-      <ProductList />
-    </div>
-  );
+
+    const { user } = useUserContext();
+    return (
+        <ProductProvider>
+            <div className="container">
+                <Header />
+                {user && user.role === 'ADMIN'}
+                <ProductManagement />
+                <ProductSearch />
+                <ProductList />
+            </div>
+        </ProductProvider>
+    );
 };
 
 export default Product;
+

@@ -15,13 +15,19 @@ import SellerRegistration from "./pages/user/SellerRegistration";
 import CategoryManagement from "./pages/Category/Category";
 import Payment from "./pages/OrderItem/Payment";
 import ProductCreate from "./pages/Product/ProductCreate";
+import { UserProvider } from "./context/UserContext";
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
 
 function App() {
   return (
     <>
+      <UserProvider>
       <Routes>
         <Route path="/home" element={<Product />} exact />
         <Route path="/product/:id" element={<ProductDetail />} />
+
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -39,6 +45,7 @@ function App() {
         <Route path="/test" element={<AccordionTest />} />
         <Route path="/product-create" element={<ProductCreate />} />
       </Routes>
+      </UserProvider>
     </>
   );
 }

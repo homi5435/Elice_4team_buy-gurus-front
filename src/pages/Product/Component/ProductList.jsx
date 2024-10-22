@@ -1,32 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 import ProductCard from './ProductCard';
 import { Pagination } from 'react-bootstrap';
+import { useProductContext } from '../../../context/ProductContext'; // Context import
 
 const ProductList = () => {
-    const [products, setProducts] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
+    const { products } = useProductContext(); // Context에서 products 가져오기
+    const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 10;
 
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const response = await axios.get(`/api/product?page=${currentPage - 1}&size=${itemsPerPage}`); // 실제 API URL로 변경
-                setProducts(response.data.content);
-                setTotalPages(response.data.totalPages);
-            } catch (error) {
-                console.error('상품을 가져오는 데 오류가 발생했습니다:', error);
-            }
-        };
+    const totalPages = Math.ceil(products.length / itemsPerPage);
+    const paginatedProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-        fetchProducts();
-    }, [currentPage]);
-    
     return (
         <div>
             <div className="row">
-                {products.map((product) => (
+                {paginatedProducts.map((product) => (
                     <div className="col-md-4 mb-4" key={product.id}>
                         <ProductCard product={product} />
                     </div>
