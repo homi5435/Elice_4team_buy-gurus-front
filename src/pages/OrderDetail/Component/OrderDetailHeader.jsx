@@ -3,6 +3,7 @@ import {useState, useEffect} from "react";
 import "../css/orderDetailHeader.styles.css";
 
 const OrderDetailHeader = ({ orderId, orderDetail, updateOrderDetail }) => {
+  const ADMIN = "ADMIN";
   const [badgeColor, setBadgeColor] = useState("");
   const [invoiceNum, setInvoiceNum] = useState(null);
   const [isSeller, setIsSeller] = useState(false);
@@ -18,7 +19,7 @@ const OrderDetailHeader = ({ orderId, orderDetail, updateOrderDetail }) => {
       })
       .then(data => {
         const userData = data.data;
-        if (userData.role === "SELLER") setIsSeller(true);
+        if (userData.role === ADMIN) setIsSeller(true);
       })
   })
 
@@ -107,7 +108,8 @@ const InvoiceRegistration = ({ orderId, changeInvoice }) => {
     if (hasError) return;
 
     changeInvoice(invoiceNum, shippingCompany)
-    fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/order/${orderId}/invoice`, {
+    fetch(`/api/admin/order/${orderId}/invoice`, {
+        credentials: "include",
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
