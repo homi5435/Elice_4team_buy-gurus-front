@@ -18,7 +18,7 @@ const DeleteProduct = ({ productId, user, sellerId }) => {
     // 삭제 처리
     const handleDelete = async () => {
         try {
-            await axios.delete(`/api/product/${productId}`);
+            await axios.delete(`/api/admin/product/${productId}`);
             alert('상품이 성공적으로 삭제되었습니다.');
             navigate('/home'); // 상품 목록 페이지로 이동
         } catch (error) {
