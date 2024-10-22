@@ -1,4 +1,5 @@
 import {Card, Row, Col, Image} from "react-bootstrap";
+import { Link } from "react-router-dom";
 import "../css/orderDetailDrawer.styles.css";
 
 const OrderDetailDrawer = ({ orderDetail }) => {
@@ -25,7 +26,9 @@ const OrderDetailDrawer = ({ orderDetail }) => {
                   </Col>
                   <Col xs={8} md={9}>
                     <Card.Text>
-                      <a href="https://www.naver.com">{ info?.name }</a>
+                      <Link to={`/product/${info.productId}`}>
+                        {info.name}
+                      </Link>
                     </Card.Text>
                     <Card.Text>
                       <strong>가격:</strong> {info?.price?.toLocaleString()}원
