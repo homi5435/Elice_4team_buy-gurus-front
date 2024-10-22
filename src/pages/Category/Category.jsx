@@ -1,8 +1,18 @@
 import React, { useState, useEffect, Children } from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { Modal, Button, Alert, Form } from "react-bootstrap";
-import axios from "axios"; // axios 추가
-import "./Category.css";
+import {
+  Modal,
+  Button,
+  Alert,
+  Form,
+  Container,
+  Row,
+  Col,
+} from "react-bootstrap";
+import Header2 from "../../components/Header2";
+import CustomButton from "../../components/Button";
+import axios from "../../utils/interceptors";
+import { useNavigate } from "react-router-dom";
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
@@ -14,7 +24,7 @@ const CategoryManagement = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [isSubcategory, setIsSubcategory] = useState(false);
   const [editName, setEditName] = useState("");
-
+  const nav = useNavigate();
   // 1. 카테고리 조회
   const fetchCategories = async () => {
     try {
@@ -54,7 +64,7 @@ const CategoryManagement = () => {
       try {
         if (isSubcategory) {
           // 중분류 생성
-          const response = await axios.post("/api/category", {
+          const response = await axios.post("/api/admin/category", {
             parentId: selectedCategory, // 부모 카테고리의 ID
             name: newCategoryName.trim(), // 중분류 이름
           });
@@ -66,12 +76,13 @@ const CategoryManagement = () => {
                   children: [...cat.children, response.data], // 응답 데이터를 새로운 중분류로 추가
                 };
               }
+              //nav(0);
               return cat;
             })
           );
         } else {
           // 대분류 생성
-          const response = await axios.post("/api/FirstCategory", {
+          const response = await axios.post("/api/admin/FirstCategory", {
             id: Date.now(), // 임시로 ID 설정
             name: newCategoryName.trim(),
           });
@@ -89,6 +100,7 @@ const CategoryManagement = () => {
         }
         setNewCategoryName(""); // 생성 후 입력 필드 초기화
         setShowCreateModal(false); // 모달 닫기
+        //nav(0);
       } catch (error) {
         console.error("Error creating category:", error);
       }
@@ -114,7 +126,7 @@ const CategoryManagement = () => {
         setCategories(updatedCategories);
       } else {
         // 대분류 삭제 API 요청
-        await axios.delete(`/api/category/${selectedCategory.id}`);
+        await axios.delete(`/api/admin/category/${selectedCategory.id}`);
         setCategories(
           categories.filter((cat) => cat.id !== selectedCategory.id)
         );
@@ -135,129 +147,161 @@ const CategoryManagement = () => {
   };
 
   return (
-    <div className="category-container p-4">
-      {/* 대분류 생성 버튼 */}
-      <div className="addBigCategoryButton">
-        <Button variant="dark" onClick={() => openCreateModal()}>
-          대분류 추가
-        </Button>
-      </div>
-
-      {/* 카테고리 목록 */}
-      <div className="space-y-4">
-        {categories.map((category) => (
-          <div key={category.id} className="bigCategory">
-            <div className="d-flex justify-content-center mb-2">
-              <Button
-                variant="link"
-                onClick={() => toggleCategory(category.id)}
-              >
-                {category.isOpen ? (
-                  <ChevronDown size={20} />
-                ) : (
-                  <ChevronRight size={20} />
-                )}
-              </Button>
-              <Form.Control
-                type="text"
-                readOnly
-                value={category.name}
-                className="category-input mx-2"
-              />
-              <Button
-                variant="danger"
-                onClick={() => openDeleteModal(category)}
-              >
-                삭제
+    <Container>
+      <Row className="justify-content-center">
+        <Col xs={12} md={6}>
+          <Header2
+            leftchild={<CustomButton text={"<<"} onClick={() => nav(-1)} />}
+          />
+          <div className="category-container p-4">
+            {/* 대분류 생성 버튼 */}
+            <div className="d-flex justify-content-center mb-4">
+              <Button variant="dark" onClick={() => openCreateModal()}>
+                대분류 추가
               </Button>
             </div>
 
-            {category.isOpen && (
-              <div className="subcategoryContainer">
-                {category.children && category.children.length > 0 ? (
-                  category.children.map((sub) => (
-                    <div
-                      key={sub.id}
-                      className="d-flex justify-content-center mb-2"
-                    >
+            {/* 카테고리 목록 */}
+            <div className="space-y-4">
+              {categories.map((category) => (
+                <div key={category.id} className="mb-4">
+                  {/* 대분류 */}
+                  <div className="d-flex flex-column">
+                    <div className="d-flex justify-content-center mb-2">
+                      <Button
+                        variant="link"
+                        onClick={() => toggleCategory(category.id)}
+                        className="me-2 align-self-start"
+                      >
+                        {category.isOpen ? (
+                          <ChevronDown size={20} />
+                        ) : (
+                          <ChevronRight size={20} />
+                        )}
+                      </Button>
+                    </div>
+
+                    <div className="d-flex align-items-center justify-content-between mb-2">
                       <Form.Control
                         type="text"
                         readOnly
-                        value={sub.name}
-                        className="subcategory-input mx-2"
+                        value={category.name}
+                        className="flex-grow-1 me-2"
                       />
                       <Button
                         variant="danger"
-                        onClick={() => openDeleteModal(category, sub)}
+                        onClick={() => openDeleteModal(category)}
+                        style={{ width: "70px", height: "40px" }}
                       >
                         삭제
                       </Button>
                     </div>
-                  ))
-                ) : (
-                  <p>중분류가 없습니다.</p> // 중분류가 없을 때 출력할 메시지
-                )}
-                <Button
-                  variant="dark"
-                  onClick={() => openCreateModal(category.id)}
-                >
+                  </div>
+
+                  {/* 중분류 */}
+                  {category.isOpen && (
+                    <div className="subcategoryContainer">
+                      {category.children && category.children.length > 0 ? (
+                        category.children.map((sub) => (
+                          <div
+                            key={sub.id}
+                            className="d-flex align-items-center justify-content-between mb-2"
+                          >
+                            <Form.Control
+                              type="text"
+                              readOnly
+                              value={sub.name}
+                              className="flex-grow-1 me-2"
+                            />
+                            <Button
+                              variant="danger"
+                              onClick={() => openDeleteModal(category, sub)}
+                              style={{ width: "70px", height: "40px" }}
+                            >
+                              삭제
+                            </Button>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-center">중분류가 없습니다.</p>
+                      )}
+                      <Button
+                        variant="dark"
+                        onClick={() => openCreateModal(category.id)}
+                        className="d-flex justify-content-center align-items-center mx-auto"
+                      >
+                        중분류 추가
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* 생성 모달 */}
+            <Modal
+              show={showCreateModal}
+              onHide={() => setShowCreateModal(false)}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>
+                  {isSubcategory ? "중분류 생성" : "대분류 생성"}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form.Control
+                  type="text"
+                  placeholder="카테고리 이름 입력"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                />
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="primary" onClick={handleCreate}>
                   생성
                 </Button>
-              </div>
-            )}
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowCreateModal(false)}
+                >
+                  취소
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
+            {/* 삭제 모달 */}
+            <Modal
+              show={showDeleteModal}
+              onHide={() => setShowDeleteModal(false)}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>삭제 확인</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Alert variant="warning" className="text-center">
+                  {'"' +
+                    (selectedSubcategory
+                      ? selectedSubcategory.name
+                      : selectedCategory?.name) +
+                    '"을(를) 삭제하시겠습니까?'}
+                </Alert>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="danger" onClick={handleDelete}>
+                  삭제
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowDeleteModal(false)}
+                >
+                  취소
+                </Button>
+              </Modal.Footer>
+            </Modal>
           </div>
-        ))}
-      </div>
-
-      {/* 생성 모달 */}
-      <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {isSubcategory ? "중분류 생성" : "대분류 생성"}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Control
-            type="text"
-            placeholder="카테고리 이름 입력"
-            value={newCategoryName}
-            onChange={(e) => setNewCategoryName(e.target.value)}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="primary" onClick={handleCreate}>
-            생성
-          </Button>
-          <Button variant="secondary" onClick={() => setShowCreateModal(false)}>
-            취소
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* 삭제 모달 */}
-      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>삭제 확인</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Alert variant="warning" className="text-center">
-            {'"'}
-            {selectedSubcategory
-              ? selectedSubcategory.name
-              : selectedCategory?.name}
-            {'"'}을(를) 삭제하시겠습니까?
-          </Alert>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={handleDelete}>
-            삭제
-          </Button>
-          <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-            취소
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
