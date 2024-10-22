@@ -180,12 +180,24 @@ const ProductDetail = () => {
         return <div>상품을 찾을 수 없습니다.</div>; // 상품이 없을 때 표시
     }
 
+    // 상품 수정 핸들러
+    const handleEditProduct = () => {
+        navigate(`/product-create`, {state: product});
+    };
+
     return (
         <div className="container mt-4">
-            {/* DeleteProduct 컴포넌트 추가 */}
-            <DeleteProduct 
-                productId={id}
-            />
+            <div className="d-flex justify-content-end mb-3">
+                <button 
+                    className="btn btn-primary" 
+                    onClick={handleEditProduct}
+                >
+                    상품 수정
+                </button>
+                <DeleteProduct 
+                    productId={id} 
+                />
+            </div>
             <h1>{product.name}</h1>
             {mainImage && (
                 <img src={mainImage} alt={product.name} className="img-fluid mb-3" style={{ width: '500px', height: 'auto' }}/>

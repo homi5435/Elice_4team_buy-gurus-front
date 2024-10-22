@@ -36,14 +36,15 @@ const DeleteProduct = ({ productId }) => {
 
     return (
         <>
-            <div className="mb-3 d-flex justify-content-end">
-                <Button 
-                    variant="danger"
-                    onClick={() => setShowModal(true)}
-                >
-                    상품 삭제
-                </Button>
-            </div>
+            
+            <Button 
+                variant="danger"
+                onClick={() => setShowModal(true)}
+                className="ms-2"
+            >
+                상품 삭제
+            </Button>
+
 
             <Modal 
                 show={showModal} 
