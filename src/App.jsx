@@ -16,6 +16,7 @@ import Payment from "./pages/OrderItem/Payment";
 import ProductCreate from "./pages/Product/ProductCreate";
 import { UserProvider } from "./context/UserContext";
 import axios from "axios";
+import Notfound from "./pages/NotFound";
 
 axios.defaults.withCredentials = true;
 
@@ -23,28 +24,28 @@ function App() {
   return (
     <>
       <UserProvider>
-      <Routes>
-        <Route path="/home" element={<Product />} exact />
-        <Route path="/product/:id" element={<ProductDetail />} />
+        <Routes>
+          <Route path="/home" element={<Product />} exact />
+          <Route path="/product/:id" element={<ProductDetail />} />
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
-        <Route path="/order" element={<Order />} />
-        <Route path="/order/:orderId" element={<OrderDetail />} />
+          <Route path="/order" element={<Order />} />
+          <Route path="/order/:orderId" element={<OrderDetail />} />
 
-        <Route path="/userMe" element={<MyPage />} />
-        <Route path="/orderitem" element={<OrderItem />} />
-        <Route path="/payment" element={<Payment />} />
+          <Route path="/userMe" element={<MyPage />} />
+          <Route path="/orderitem" element={<OrderItem />} />
+          <Route path="/payment" element={<Payment />} />
 
-        <Route path="/categoryManagement" element={<CategoryManagement />} />
+          <Route path="/categoryManagement" element={<CategoryManagement />} />
 
-        <Route path="/test" element={<AccordionTest />} />
-        <Route path="/product-create" element={<ProductCreate />} />
+          <Route path="/test" element={<AccordionTest />} />
+          <Route path="/product-create" element={<ProductCreate />} />
 
-        <Route path="*" element={<Notfound />} />
-      </Routes>
+          <Route path="*" element={<Notfound />} />
+        </Routes>
       </UserProvider>
     </>
   );
