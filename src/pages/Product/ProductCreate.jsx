@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Col, Row, Container, Image } from 'react-bootstrap';
 import Header from '/src/components/Header';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ProductCreate = () => {
   // 폼 데이터
@@ -22,6 +23,8 @@ const ProductCreate = () => {
   // 파일 미리보기, 파일 개수
   const [previewImages, setPreviewImages] = useState([]);
   const [fileCount, setFileCount] = useState(0);
+
+  const navigate = useNavigate();
 
   // 카테고리 조회
   useEffect(() => {
@@ -90,14 +93,19 @@ const ProductCreate = () => {
     axios.post('/api/product', data)
   };
 
+  // 취소 버튼 핸들러
+  const handleCancel = () => {
+    navigate('/home');
+  };
+
   return (
     <div>
       <Header />
 
       <main>
-        {/* 상품 추가 */}
+        {/* 상품 추가 / 수정 */}
         <Container>
-          <h2>상품 추가</h2>
+          <h2>상품 추가 / 수정</h2>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formName">
               <Form.Label>상품 이름</Form.Label>
@@ -206,7 +214,11 @@ const ProductCreate = () => {
             </Row>
 
             <Button variant="primary" type="submit" className="mt-3">
-              상품 추가
+              상품 추가 / 수정
+            </Button>
+
+            <Button variant="secondary" onClick={handleCancel} className="mt-3 ml-3">
+              취소
             </Button>
           </Form>
         </Container>
