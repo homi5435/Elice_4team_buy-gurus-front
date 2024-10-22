@@ -9,12 +9,17 @@ import EditReviewModal from './Component/EditReviewModal'; // 수정 모달 임�
 import DeleteReviewModal from './Component/DeleteReviewModal'; // 삭제 모달 임포트
 import ConfirmEditModal from './Component/ConfirmEditModal'; // 수정 확인 모달 임포트
 import { useUserContext } from '../../context/UserContext.jsx';
+import DeleteProduct from './Component/DeleteProduct.jsx';
 
 const ProductDetail = () => {
     const { id } = useParams(); // URL 파라미터에서 상품 ID 가져오기
     const navigate = useNavigate();
+    const { user } = useUserContext();
+
+
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true); // 로딩 상태 추가
+    const [error, setError] = useState(null);
     const [reviews, setReviews] = useState([]); // 리뷰 상태
     const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
     const [totalPages, setTotalPages] = useState(0); // 총 페이지 수
@@ -24,8 +29,8 @@ const ProductDetail = () => {
     const [editReview, setEditReview] = useState(null); // 수정할 리뷰 정보
     const [mainImage, setMainImage] = useState(''); // 큰 이미지 상태
     const [quantity, setQuantity] = useState(1);
-    const [error, setError] = useState(null);
-    const { user } = useUserContext();
+    
+    
 
     useEffect(() => {
         const fetchProductDetail = async () => {
@@ -70,31 +75,7 @@ const ProductDetail = () => {
                 
                 // 자세한 에러 메시지 설정
                 let errorMessage = '상품 정보를 가져오는 데 실패했습니다.';
-                
-                if (error.response) {
-                    // 서버 응답이 있는 경우
-                    console.log('Error response:', error.response);
-                    switch (error.response.status) {
-                        case 400:
-                            errorMessage = '잘못된 요청입니다. 상품 ID를 확인해주세요.';
-                            break;
-                        case 401:
-                            errorMessage = '로그인이 필요합니다.';
-                            navigate('/login');
-                            break;
-                        case 403:
-                            errorMessage = '접근 권한이 없습니다.';
-                            break;
-                        case 404:
-                            errorMessage = '상품을 찾을 수 없습니다.';
-                            break;
-                        default:
-                            errorMessage = `서버 오류가 발생했습니다. (${error.response.status})`;
-                    }
-                } else if (error.request) {
-                    // 요청은 보냈으나 응답을 받지 못한 경우
-                    errorMessage = '서버에서 응답이 없습니다. 네트워크 연결을 확인해주세요.';
-                }
+            
                 
                 setError(errorMessage);
             } finally {
@@ -105,27 +86,6 @@ const ProductDetail = () => {
         fetchProductDetail();
     }, [id, navigate]);
 
-    if (loading) {
-        return <div className="text-center">로딩 중...</div>;
-    }
-
-    if (error) {
-        return (
-            <div className="alert alert-danger" role="alert">
-                <h4 className="alert-heading">오류 발생</h4>
-                <p>{error}</p>
-                <hr />
-                <p className="mb-0">
-                    <button 
-                        className="btn btn-outline-danger"
-                        onClick={() => navigate(-1)}
-                    >
-                        이전 페이지로 돌아가기
-                    </button>
-                </p>
-            </div>
-        );
-    }
 
     useEffect(() => {
         const fetchReviews = async () => {
@@ -195,7 +155,25 @@ const ProductDetail = () => {
     };
 
     if (loading) {
-        return <div className="text-center">로딩 중...</div>; // 로딩 중 표시
+        return <div className="text-center">로딩 중...</div>;
+    }
+
+    if (error) {
+        return (
+            <div className="alert alert-danger" role="alert">
+                <h4 className="alert-heading">오류 발생</h4>
+                <p>{error}</p>
+                <hr />
+                <p className="mb-0">
+                    <button 
+                        className="btn btn-outline-danger"
+                        onClick={() => navigate(-1)}
+                    >
+                        이전 페이지로 돌아가기
+                    </button>
+                </p>
+            </div>
+        );
     }
 
     if (!product) {
@@ -207,12 +185,10 @@ const ProductDetail = () => {
             {/* DeleteProduct 컴포넌트 추가 */}
             <DeleteProduct 
                 productId={id}
-                user={user}
-                sellerId={product?.sellerUserId} // 상품 판매자 ID
             />
             <h1>{product.name}</h1>
             {mainImage && (
-                <img src={mainImage} alt={product.name} className="img-fluid mb-3" />
+                <img src={mainImage} alt={product.name} className="img-fluid mb-3" style={{ width: '500px', height: 'auto' }}/>
             )}
             <div className="d-flex flex-wrap">
                 {product.imageUrls && product.imageUrls.map((url, index) => (
@@ -227,11 +203,12 @@ const ProductDetail = () => {
                 ))}
             </div>
             <p>가격: {product.price} 원</p>
+            <p>재고: {product.quantity}개</p>
             <p>{product.description}</p>
 
             {/* 수량 입력란 추가 */}
             <div className="mb-3">
-                <label htmlFor="quantity">수량</label>
+                <label htmlFor="quantity">구매 수량</label>
                 <input
                     type="number"
                     id="quantity"
@@ -239,6 +216,7 @@ const ProductDetail = () => {
                     onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))} // 수량 업데이트
                     min="1"
                     className="form-control"
+                    style={{width: '100px', margin: '10px'}}
                 />
             </div>
             <button className="btn btn-success mb-3" onClick={handleAddToCart}>
@@ -262,7 +240,7 @@ const ProductDetail = () => {
 
             {/* 페이지네이션 추가 */}
             <Pagination>
-                <Pagination.Prev onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
+                <Pagination.Prev onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
                 {Array.from({ length: totalPages }, (_, index) => (
                     <Pagination.Item
                         key={index}
@@ -272,16 +250,17 @@ const ProductDetail = () => {
                         {index + 1}
                     </Pagination.Item>
                 ))}
-                <Pagination.Next onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
+                <Pagination.Next onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
             </Pagination>
 
             {/* 수정 모달 */}
-            <EditReviewModal 
+            {showEditModal && editReview && (
+                <EditReviewModal 
                 show={showEditModal} 
                 onHide={() => setShowEditModal(false)} 
                 review={editReview} 
-                onSave={confirmEdit} // 수정하기 버튼 클릭 시 수정 확인 모달을 호출
-            />
+                onSave={confirmEdit}/>
+            )}
 
             {/* 수정 확인 모달 */}
             <ConfirmEditModal 
