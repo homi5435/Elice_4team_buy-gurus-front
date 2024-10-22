@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Form, Button, Col, Row, Container, Image } from 'react-bootstrap';
 import Header from '/src/components/Header';
 import axios from 'axios';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const ProductCreate = () => {
   // 폼 데이터
@@ -14,6 +15,32 @@ const ProductCreate = () => {
     imageFiles: []
   });
 
+  const location = useLocation();
+
+  // 기본값 설정
+  useEffect(() => {
+  if (location.state) {
+    const { name, price, description, quantity, categoryId, imageFiles } = location.state;
+    setFormData((prevState) => ({
+      ...prevState,
+      name: name || prevState.name,
+      price: price || prevState.price,
+      description: description || prevState.description,
+      quantity: quantity || prevState.quantity,
+      category: categoryId || prevState.category,
+      imageFiles: imageFiles || prevState.imageFiles,
+    }));
+
+    // 이미지 미리보기 설정
+    if (imageFiles) {
+      const newPreviews = imageFiles.map((file) => URL.createObjectURL(file));
+      setPreviewImages(newPreviews);
+      setFileCount(newPreviews.length);
+    }
+  }
+}, [location.state]);
+  
+
   // 카테고리 데이터
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
@@ -22,6 +49,8 @@ const ProductCreate = () => {
   // 파일 미리보기, 파일 개수
   const [previewImages, setPreviewImages] = useState([]);
   const [fileCount, setFileCount] = useState(0);
+
+  const navigate = useNavigate();
 
   // 카테고리 조회
   useEffect(() => {
@@ -87,7 +116,21 @@ const ProductCreate = () => {
       data.append('imageFiles', file);
     });
 
-    axios.post('/api/admin/product', data)
+    if (location.state && location.state.id){
+      axios.patch(`/api/product/${location.state.id}`, data)
+      alert("상품 수정이 완료되었습니다.");
+      navigate('/home');
+    }
+    else {
+      axios.post('/api/product', data)
+      alert("상품 추가가 완료되었습니다.");
+      navigate('/home');
+    }
+  };
+
+  // 취소 버튼 핸들러
+  const handleCancel = () => {
+    navigate('/home');
   };
 
   return (
@@ -95,9 +138,9 @@ const ProductCreate = () => {
       <Header />
 
       <main>
-        {/* 상품 추가 */}
+        {/* 상품 추가 / 수정 */}
         <Container>
-          <h2>상품 추가</h2>
+          <h2>상품 추가 / 수정</h2>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formName">
               <Form.Label>상품 이름</Form.Label>
@@ -205,8 +248,12 @@ const ProductCreate = () => {
               ))}
             </Row>
 
-            <Button variant="primary" type="submit" className="mt-3">
-              상품 추가
+            <Button variant="primary" type="submit" className="mt-3 me-3">
+              상품 추가 / 수정
+            </Button>
+
+            <Button variant="secondary" onClick={handleCancel} className="mt-3">
+              취소
             </Button>
           </Form>
         </Container>
