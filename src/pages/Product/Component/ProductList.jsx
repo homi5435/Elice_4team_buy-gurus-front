@@ -2,11 +2,12 @@ import React from 'react';
 import ProductCard from './ProductCard';
 import { Pagination } from 'react-bootstrap';
 import { useProductContext } from '../../../context/ProductContext'; // Context import
+import '../style/ProductList.css';
 
 const ProductList = () => {
     const { products } = useProductContext(); // Context에서 products 가져오기
     const [currentPage, setCurrentPage] = React.useState(1);
-    const itemsPerPage = 10;
+    const itemsPerPage = 9;
 
     const totalPages = Math.ceil(products.length / itemsPerPage);
     const paginatedProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);

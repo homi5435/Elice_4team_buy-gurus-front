@@ -1,5 +1,6 @@
 import React from 'react';
 import { useUserContext } from '../../../context/UserContext';
+import '../style/ReviewCard.css'; // CSS 파일 import
 
 const ReviewCard = ({ review, onEdit, onDelete }) => {
     const { user } = useUserContext();
@@ -17,9 +18,8 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
     };
 
     const renderStars = (rating) => {
-        // 평점에 따라 별을 렌더링하는 함수
         const stars = [];
-        for (let i = 1; i <= rating; i++) {
+        for (let i = 1; i <= 5; i++) {
             stars.push(
                 <span key={i} className={i <= rating ? 'text-warning' : 'text-muted'}>
                     ⭐️
@@ -30,18 +30,17 @@ const ReviewCard = ({ review, onEdit, onDelete }) => {
     };
 
     return (
-        <div className="card mb-4" >
+        <div className="review-card mb-4">
             <div className="card-body d-flex justify-content-between">
-                <div>
-                    <h5 className="card-title">{review.userNickname} </h5>
+                <div className="review-content">
+                    <h5 className="card-title">{review.userNickname}</h5>
                     <p>평점: {renderStars(review.rating)}</p>
                     <p className="card-text">{review.comment}</p>
                     <p className="card-text">
                         <small className="text-muted">작성일: {new Date(review.modifiedAt).toLocaleString()}</small>
                     </p>
                 </div>
-                <div>
-                    {/* 작성자 또는 관리자일 경우에만 버튼 표시 */}
+                <div className="review-buttons">
                     {user && (review.userId === user.id || user.role === 'ADMIN') ? (
                         <>
                             <button className="btn btn-secondary btn-sm me-2" onClick={handleEdit}>

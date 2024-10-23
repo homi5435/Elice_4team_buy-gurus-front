@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
 import { useUserContext } from '../../../context/UserContext';
+import '../style/ProductManagement.css';
 
 const ProductManagement = () => {
     const { user } = useUserContext();

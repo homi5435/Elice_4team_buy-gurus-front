@@ -4,6 +4,7 @@ import Header from '/src/components/Header';
 import axiosInstance from "@/utils/interceptors";
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
+import './style/ProductCreate.css';
 
 const ProductCreate = () => {
   // 폼 데이터
@@ -139,7 +140,7 @@ const ProductCreate = () => {
 
       <main>
         {/* 상품 추가 / 수정 */}
-        <Container>
+        <Container className="product-container">
           <h2>상품 추가 / 수정</h2>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formName">
@@ -251,13 +252,14 @@ const ProductCreate = () => {
               ))}
             </Row>
 
-            <Button variant="primary" type="submit" className="mt-3 me-3">
-              상품 추가 / 수정
-            </Button>
-
-            <Button variant="secondary" onClick={handleCancel} className="mt-3">
-              취소
-            </Button>
+            <div className="d-flex justify-content-end mt-3">
+              <Button variant="primary" type="submit" className="me-3">
+                상품 추가 / 수정
+              </Button>
+              <Button variant="secondary" onClick={handleCancel}>
+                취소
+              </Button>
+            </div>
           </Form>
         </Container>
       </main>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axiosInstance from '@/utils/interceptors';
+import '../style/ReviewForm.css';
 
 const ReviewForm = ({ productId, setReviews }) => {
     const [newReview, setNewReview] = useState('');
@@ -56,13 +57,15 @@ const ReviewForm = ({ productId, setReviews }) => {
                     disabled={isLoading}
                 />
             </div>
-            <button 
-                type="submit" 
-                className="btn btn-primary mt-2"
-                disabled={isLoading}
-            >
-                {isLoading ? '처리중...' : '작성'}
-            </button>
+            <div className="d-flex justify-content-end">
+                <button 
+                    type="submit" 
+                    className="btn btn-primary mt-2"
+                    disabled={isLoading}
+                >
+                    {isLoading ? '처리중...' : '리뷰 작성하기'}
+                </button>
+            </div>
         </form>
     );
 };

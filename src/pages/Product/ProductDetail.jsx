@@ -11,6 +11,7 @@ import DeleteReviewModal from './Component/DeleteReviewModal'; // 삭제 모달 
 import { useUserContext } from '../../context/UserContext.jsx';
 import DeleteProduct from './Component/DeleteProduct.jsx';
 import Header from '../../components/Header.jsx';
+import './style/ProductDetail.css';
 
 const ProductDetail = () => {
     const { id } = useParams(); // URL 파라미터에서 상품 ID 가져오기
@@ -90,7 +91,7 @@ const ProductDetail = () => {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const response = await axios.get(`/api/product/${id}/review?page=${currentPage - 1}&size=10`);
+                const response = await axios.get(`/api/product/${id}/review?page=${currentPage - 1}&size=9`);
                 setReviews(response.data.content);
                 setTotalPages(response.data.totalPages);
             } catch (error) {
@@ -191,63 +192,88 @@ const ProductDetail = () => {
     };
 
     return (
-        <div className="container mt-4">
+        <div className="product-detail-container mt-4">
             <Header />
-            {user && user.role === 'ADMIN' ? 
-            <div className="d-flex justify-content-end mb-3">
-                <button 
-                    className="btn btn-primary" 
-                    onClick={handleEditProduct}
-                >
-                    상품 수정
-                </button>
-                <DeleteProduct 
-                    productId={id} 
-                />
-            </div>
-            : null}
-            <h1>{product.name}</h1>
-            {mainImage && (
-                <img src={mainImage} alt={product.name} className="img-fluid mb-3" style={{ width: '500px', height: 'auto' }}/>
+            {user && user.role === 'ADMIN' && (
+                <div className="d-flex justify-content-end mb-3">
+                    <button className="btn btn-primary" onClick={handleEditProduct}>
+                        상품 수정
+                    </button>
+                    <DeleteProduct productId={id} />
+                </div>
             )}
-            <div className="d-flex flex-wrap">
-                {product.imageUrls && product.imageUrls.map((url, index) => (
-                    <img
-                        key={index}
-                        src={url}
-                        alt={`product-thumbnail-${index}`}
-                        className="img-thumbnail me-2"
-                        style={{ width: '100px', height: 'auto', cursor: 'pointer' }}
-                        onClick={() => setMainImage(url)} // 클릭 시 큰 이미지 변경
-                    />
-                ))}
-            </div>
-            <p>가격: {product.price?.toLocaleString()} 원</p>
-            <p>재고: {product.quantity}개</p>
-            <p>{product.description}</p>
+            <h1 className="mb-3">{product.name}</h1>
 
-            {/* 수량 입력란 추가 */}
-            <div className="mb-3">
-                <label htmlFor="userQuantity">구매 수량</label>
-                <input
-                    type="number"
-                    id="userQuantity"
-                    value={userQuantity}
-                    onChange={(e) => setUserQuantity(Math.max(1, Number(e.target.value)))} // 수량 업데이트
-                    min="1"
-                    className="form-control"
-                    style={{width: '100px', margin: '10px'}}
-                />
+            <div className="d-flex mb-3">
+                {/* 메인 이미지 및 썸네일 */}
+                <div className="me-3">
+                    {mainImage && (
+                        <img src={mainImage} alt={product.name} className="img-fluid mb-3 product-main-image" />
+                    )}
+                    <div className="d-flex flex-wrap">
+                        {product.imageUrls && product.imageUrls.map((url, index) => (
+                            <img
+                                key={index}
+                                src={url}
+                                alt={`product-thumbnail-${index}`}
+                                className="img-thumbnail me-2 thumbnail"
+                                onClick={() => setMainImage(url)} // 클릭 시 큰 이미지 변경
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* 상품 정보 및 구매 수량 */}
+                <div className="flex-grow-1 d-flex flex-column justify-content-between">
+                    <div className="d-flex justify-content-between">
+                        <div>
+                            <p className="h5">가격
+                            <div class="alert alert-light" role="alert">
+                                \{product.price?.toLocaleString()}
+                            </div></p>
+                            <p className="h5">남은 재고
+                                <div class="alert alert-light" role="alert">
+                                    {product.quantity}
+                                </div>
+                            </p>
+                            <p className="h5">카테고리 분류
+                                <div class="alert alert-light" role="alert">
+                                    {product.category}
+                                </div>
+                            </p>
+                        </div>
+                        <div className="d-flex flex-column align-items-end" >
+                            <label htmlFor="userQuantity" className="me-2">구매 수량</label>
+                            <input
+                                type="number"
+                                id="userQuantity"
+                                value={userQuantity}
+                                onChange={(e) => setUserQuantity(Math.max(1, Number(e.target.value)))}
+                                min="1"
+                                className="form-control me-2"
+                                style={{ width: '100px' }}
+                            />
+                            <button className="btn btn-success mt-2" onClick={handleAddToCart}>
+                                장바구니에 추가
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {/* 상품 설명 */}
             </div>
-            <button className="btn btn-success mb-3" onClick={handleAddToCart}>
-                장바구니에 추가
-            </button>
+            <h5 className='text-center'>상품 설명</h5>
+            <div class="alert alert-light" role="alert">
+                {product.description}
+            </div>
+
+            {/* 구분선 추가 */}
+            <hr className="my-4" />
 
             <h2>리뷰</h2>
-            <ReviewForm productId={id} setReviews={setReviews} /> {/* 리뷰 작성 폼 컴포넌트 */}
+            <ReviewForm productId={id} setReviews={setReviews} />
             <div className="row mt-4">
                 {reviews.map((review) => (
-                    <div className="col-md-4" key={review.id}>
+                    <div className="col-md-4 mb-3" key={review.id}>
                         <ReviewCard 
                             review={review} 
                             onEdit={handleEditReview} 
@@ -257,8 +283,7 @@ const ProductDetail = () => {
                 ))}
             </div>
 
-            {/* 페이지네이션 추가 */}
-            <Pagination>
+            <Pagination className="mt-4">
                 <Pagination.Prev onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
                 {Array.from({ length: totalPages }, (_, index) => (
                     <Pagination.Item
@@ -272,16 +297,15 @@ const ProductDetail = () => {
                 <Pagination.Next onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
             </Pagination>
 
-            {/* 수정 모달 */}
             {showEditModal && editReview && (
                 <EditReviewModal 
-                show={showEditModal} 
-                onHide={() => setShowEditModal(false)} 
-                review={editReview} 
-                onSave={confirmEdit}/>
+                    show={showEditModal} 
+                    onHide={() => setShowEditModal(false)} 
+                    review={editReview} 
+                    onSave={confirmEdit}
+                />
             )}
 
-            {/* 삭제 모달 */}
             <DeleteReviewModal 
                 show={showDeleteModal} 
                 onHide={() => setShowDeleteModal(false)} 
