@@ -9,6 +9,9 @@ const ProductSearch = () => {
     const [selectedCategory, setSelectedCategory] = useState('');
     const [subCategories, setSubCategories] = useState([]);
     const [selectedSubCategory, setSelectedSubCategory] = useState('');
+    const [currentPage, setCurrentPage] = useState(0); // 페이지 상태 추가
+    const itemsPerPage = 10; // 페이지당 아이템 수
+
 
     // 컴포넌트 마운트 시 카테고리와 전체 상품 조회
     useEffect(() => {
@@ -44,17 +47,25 @@ const ProductSearch = () => {
 
     const handleSearch = async (e) => {
         e.preventDefault();
+
+        if (!selectedCategory && !selectedSubCategory && !searchTerm) {
+            alert('카테고리 또는 제품 이름을 입력해 주세요.');
+            return;
+        }
+
         try {
-            const response = await axios.get('/api/products/search', {
+            const response = await axios.get('/api/product/search', {
                 params: {
-                    parentId: selectedCategory,
-                    categoryId: selectedSubCategory,
-                    name: searchTerm
+                    parentId: selectedCategory || undefined,
+                    categoryId: selectedSubCategory || undefined,
+                    name: searchTerm || undefined,
+                    page: currentPage,
+                    size: itemsPerPage // 페이지와 사이즈 추가
                 }
             });
             setProducts(response.data.content);
         } catch (error) {
-            console.error('상품 검색 중 오류가 발생했습니다:', error);
+            console.error('상품 검색 중 오류가 발생했습니다:', error.response?.data || error.message);
         }
     };
 
@@ -83,7 +94,7 @@ const ProductSearch = () => {
                             value={selectedCategory}
                             onChange={handleCategoryChange}
                         >
-                            <option value="">전체 상품</option>
+                            <option value="">카테고리 대분류</option>
                             {categories.map((category) => (
                                 <option key={category.id} value={category.id}>
                                     {category.name}
@@ -98,7 +109,7 @@ const ProductSearch = () => {
                                 value={selectedSubCategory}
                                 onChange={(e) => setSelectedSubCategory(e.target.value)}
                             >
-                                <option value="">전체 상품</option>
+                                <option value="">카테고리 소분류</option>
                                 {subCategories.map((subCategory) => (
                                     <option key={subCategory.id} value={subCategory.id}>
                                         {subCategory.name}

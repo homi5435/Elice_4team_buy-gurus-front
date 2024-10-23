@@ -11,6 +11,10 @@ const ProductList = () => {
     const totalPages = Math.ceil(products.length / itemsPerPage);
     const paginatedProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
     return (
         <div>
             <div className="row">
@@ -21,14 +25,31 @@ const ProductList = () => {
                 ))}
             </div>
             <Pagination className="my-4">
-                <Pagination.Prev onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
-                <Pagination.Item active>{currentPage}</Pagination.Item>
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => setCurrentPage(index + 1)}>
-                        {index + 1}
-                    </Pagination.Item>
-                ))}
-                <Pagination.Next onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
+                <Pagination.Prev onClick={() => handlePageChange(Math.max(currentPage - 1, 1))} disabled={currentPage === 1} />
+                {currentPage > 1 && (
+                    <Pagination.Item onClick={() => handlePageChange(1)}>1</Pagination.Item>
+                )}
+                {currentPage > 3 && <Pagination.Ellipsis />}
+                {Array.from({ length: totalPages }, (_, index) => {
+                    const pageNumber = index + 1;
+                    if (pageNumber < currentPage - 1 || pageNumber > currentPage + 1) {
+                        return null; // 현재 페이지의 바로 앞뒤 페이지만 표시
+                    }
+                    return (
+                        <Pagination.Item 
+                            key={pageNumber} 
+                            active={pageNumber === currentPage} 
+                            onClick={() => handlePageChange(pageNumber)}
+                        >
+                            {pageNumber}
+                        </Pagination.Item>
+                    );
+                })}
+                {currentPage < totalPages - 2 && <Pagination.Ellipsis />}
+                {totalPages > 1 && (
+                    <Pagination.Item onClick={() => handlePageChange(totalPages)}>{totalPages}</Pagination.Item>
+                )}
+                <Pagination.Next onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))} disabled={currentPage === totalPages} />
             </Pagination>
         </div>
     );

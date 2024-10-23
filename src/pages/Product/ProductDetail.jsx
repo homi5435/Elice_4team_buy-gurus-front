@@ -221,7 +221,7 @@ const ProductDetail = () => {
                     />
                 ))}
             </div>
-            <p>가격: {product.price} 원</p>
+            <p>가격: {product.price?.toLocaleString()} 원</p>
             <p>재고: {product.quantity}개</p>
             <p>{product.description}</p>
 

@@ -226,6 +226,9 @@ const ProductCreate = () => {
 
             <Form.Group controlId="formFile">
               <Form.Label>상품 이미지</Form.Label>
+              <Form.Text className="text-danger" style={{marginLeft: '0.5rem'}}>
+                {`경고: 이미지 파일은 9:16 비율로 업로드해 주세요.`}
+              </Form.Text>
               <Form.Control
                 type="file"
                 name="imageFiles"
