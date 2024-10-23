@@ -29,14 +29,8 @@ const Header = () => {
 
   // 로그아웃 핸들러
   const handleLogout = () => {
-    axios
-      .post(
-        "/api/logout",
-        {},
-        {
-          withCredentials: true,
-        }
-      )
+    axiosInstance
+      .post("/api/logout", {})
       .then((response) => {
         console.log(response.data);
         setIsLoggedIn(false);

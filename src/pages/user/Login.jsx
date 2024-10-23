@@ -11,7 +11,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Header2 from "../../components/Header2";
 import Button from "../../components/Button";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../utils/interceptors";
 
 function Login() {
   const nav = useNavigate();
@@ -29,7 +29,7 @@ function Login() {
     };
 
     try {
-      const response = await axios.post("/api/login", loginData);
+      const response = await axiosInstance.post("/api/login", loginData);
 
       console.log("로그인 성공:");
       nav("/home", { replace: true });
