@@ -45,7 +45,7 @@ const ResetPassword = () => {
     };
 
     try {
-      const response = await axios.post("/api/reset-password", resetData);
+      const response = await axios.patch("/api/reset-password", resetData);
 
       console.log("비밀번호 재설정 성공");
       nav("/login");

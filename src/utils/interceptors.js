@@ -1,6 +1,10 @@
 import axios from "axios";
 
-axios.interceptors.response.use(
+const axiosInstance = axios.create({
+  withCredentials: true,
+});
+
+axiosInstance.interceptors.response.use(
   (res) => {
     return res;
   },
@@ -12,11 +16,13 @@ axios.interceptors.response.use(
           return axios.request(error.config);
         }
       } catch (tokenError) {
-        window.location.href = "/login";
+        if (!tokenError?.config?.url.include("?no-redirect")) {
+          window.location.href = "/login";
+        }
       }
     }
     return Promise.reject(error);
   }
 );
 
-export default axios;
+export default axiosInstance;

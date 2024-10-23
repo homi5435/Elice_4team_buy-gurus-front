@@ -15,10 +15,7 @@ import CategoryManagement from "./pages/Category/Category";
 import Payment from "./pages/OrderItem/Payment";
 import ProductCreate from "./pages/Product/ProductCreate";
 import { UserProvider } from "./context/UserContext";
-import axios from "axios";
 import Notfound from "./pages/NotFound";
-
-axios.defaults.withCredentials = true;
 
 function App() {
   return (
