@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from '@/utils/interceptors';
+import axiosInstance from '@/utils/interceptors';
 
 const ReviewForm = ({ productId, setReviews }) => {
     const [newReview, setNewReview] = useState('');
@@ -10,7 +10,7 @@ const ReviewForm = ({ productId, setReviews }) => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            const response = await axios.post(`/api/user/product/${productId}/review`, {
+            const response = await axiosInstance.post(`/api/user/product/${productId}/review`, {
                 productId,
                 rating,
                 comment: newReview,
