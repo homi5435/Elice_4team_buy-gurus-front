@@ -101,7 +101,8 @@ function Payment() {
             })
             .then(() => {
                 console.log("Order Create");
-                navigate('/order?type=s');
+                alert("주문내역 페이지로 이동합니다.")
+                navigate('/order?type=c');
             })
             .catch(error => {
                 console.log(error);
