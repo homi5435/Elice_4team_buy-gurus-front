@@ -7,7 +7,7 @@ import ShippingAddressModal from "./component/ShippingAddressModal";
 import {OrderResponse} from "@/objects/OrderResponse"
 import "./orderDetail.styles.css"
 import Header from "@/components/Header";
-import axios from "@/utils/interceptors";
+import axiosInstance from "@/utils/interceptors";
 
 const OrderDetail = () => {
   const [ orderDetail, setOrderDetail ] = useState(null);
@@ -18,7 +18,7 @@ const OrderDetail = () => {
   const { orderId } = useParams();
 
   useEffect(() => {
-    axios.get(`/api/order/${orderId}`)
+    axiosInstance.get(`/api/order/${orderId}`)
       .then(response => {
         const data = response.data.data;
         const orderResponse = new OrderResponse(data);

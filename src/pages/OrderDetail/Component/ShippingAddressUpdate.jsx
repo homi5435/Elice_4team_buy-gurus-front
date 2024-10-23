@@ -1,7 +1,7 @@
 import {useState, useEffect} from "react";
 import {Modal, Button, OverlayTrigger, Tooltip} from "react-bootstrap";
 import ShippingAddressModalBody from "./ShippingAddressModalBody";
-import axios from "@/utils/interceptors";
+import axiosInstance from "@/utils/interceptors";
 
 const ShippingAddressUpdate = ({ addressList, index, apiData, setModalPageNum, setIsPostapiShown, setAddressList }) => {
   const [ name, setName ] = useState("");
@@ -31,7 +31,7 @@ const ShippingAddressUpdate = ({ addressList, index, apiData, setModalPageNum, s
       address: `${address}|${addressDetail}`
     }
 
-    axios.patch(`/api/user/address/${addressList[index].id}`, {
+    axiosInstance.patch(`/api/user/address/${addressList[index].id}`, {
         ...addressList[index]
       }, 
       { withCredentials: true }

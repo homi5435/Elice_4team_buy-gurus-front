@@ -4,7 +4,7 @@ import { Card, Row, Col, Button,Image, Collapse, Modal, Container, Badge } from 
 import {OrderResponse} from "@/objects/OrderResponse";
 import Pagenation from "@/components/Pagenation";
 import Header from "@/components/Header";
-import axios from "@/utils/interceptors";
+import axiosInstance from "@/utils/interceptors";
 
 const Order = () => {
   const [urlSearchParams] = useSearchParams();
@@ -27,7 +27,7 @@ const OrderedItemList = ({ type }) => {
   const [ deleteOrderId, setDeleteOrderId ] = useState(0);
 
   useEffect(() => {
-    axios.get(`/api/order`, { 
+    axiosInstance.get(`/api/order`, { 
       params: { type, page },
       withCredentials: true
     })
@@ -52,7 +52,7 @@ const OrderedItemList = ({ type }) => {
   }
 
   const deleteOrder = (orderId) => {
-    axios.delete(`/api/order/${orderId}`, {
+    axiosInstance.delete(`/api/order/${orderId}`, {
         withCredentials: true
       })
       .then((response) => {

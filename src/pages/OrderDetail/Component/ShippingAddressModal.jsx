@@ -6,7 +6,7 @@ import ShippingAddressCreate from "./ShippingAddressCreate";
 import ShippingAddressUpdate from "./ShippingAddressUpdate";
 import ShippingAddressSelect from "./ShippingAddressSelect";
 import "../css/shippingAddressModal.styles.css";
-import axios from "@/utils/interceptors";
+import axiosInstance from "@/utils/interceptors";
 
 const ShippingAddressModal = ({isOpen, orderId, onClose, setData}) => {
   const [isAlertShown, setIsAlertShown] = useState(false);
@@ -18,7 +18,7 @@ const ShippingAddressModal = ({isOpen, orderId, onClose, setData}) => {
   const [apiData, setApiData] = useState(null);
 
   useEffect(() => {
-    axios.get(`/api/user/address`, { withCredentials: true })
+    axiosInstance.get(`/api/user/address`, { withCredentials: true })
       .then(response => {
         const datas = response.data.addressInfoDetailList?.map(addressInfo => new AddressList(addressInfo)) || [];
         setShippingAddressList(datas);
@@ -133,7 +133,7 @@ const AlertAddressDelete = ({addressId, isShow, setShow, addressIndex, removeHan
     setShow(false);
   }
   const handleDeleteBtn = () => {
-    axios.delete(`/api/user/address/${addressId}`, { withCredentials: true })
+    axiosInstance.delete(`/api/user/address/${addressId}`, { withCredentials: true })
       .then(response => {
         removeHandler(addressIndex);
       })
