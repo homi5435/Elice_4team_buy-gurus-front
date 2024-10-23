@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import {Modal, Button} from "react-bootstrap";
 import ShippingAddressModalBody from "./ShippingAddressModalBody";
+import axios from "@/utils/interceptors";
 
 const ShippingAddressCreate = ({ apiData, setIsPostapiShown, setModalPageNum, initModalData, appendShippingAddress }) => {
   const [ name, setName ] = useState("");
@@ -18,15 +19,12 @@ const ShippingAddressCreate = ({ apiData, setIsPostapiShown, setModalPageNum, in
       address: `${address}|${addressDetail}`,
       phoneNum: phoneNum,
     }
-    fetch(`/api/user/address`, {method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(addressData)
+    axios.post(`/api/user/address`, addressData, { withCredential: true })
+      .then(() => {})
+      .catch(error => {
+        const errorMessage = `${error.response?.data?.code}: ${error.response?.data?.message}`;
+        console.log(errorMessage || 'An error occurred');
       })
-      .then(response => {
-        if (!response.ok) return response.json().then(err => {throw err})
-          return;
-      })
-      .catch((err) => console.log(`${err.code}: ${err.message}`));
     appendShippingAddress(addressData);
     initModalData();
     setModalPageNum(0);
