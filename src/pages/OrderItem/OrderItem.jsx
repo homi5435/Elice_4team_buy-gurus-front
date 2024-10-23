@@ -104,12 +104,20 @@ function OrderItem() {
   }
 
   // 결제하기 핸들러
-const handlePayment = () => {
+  const handlePayment = () => {
   const selectedOrderItems = orderItems.filter((orderItem) => orderItem.selected);
   
   if (selectedOrderItems.length === 0) {
     alert("선택된 상품이 없습니다. 결제를 진행할 수 없습니다.");
     return;
+  }
+
+  // 재고 확인
+  for (let orderItem of selectedOrderItems) {
+    if (orderItem.amount > orderItem.product.quantity) {
+      alert("상품의 재고 보다 많은 수량을 주문할 수 없습니다.");
+      return;
+    }
   }
 
   handleUpdate();
