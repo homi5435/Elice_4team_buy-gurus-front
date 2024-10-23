@@ -1,6 +1,7 @@
 import {Card, Row, Col, Badge, Button, Modal, Form} from "react-bootstrap";
 import {useState, useEffect} from "react";
 import "../css/orderDetailHeader.styles.css";
+import axios from "@/utils/interceptors";
 
 const OrderDetailHeader = ({ orderId, orderDetail, updateOrderDetail }) => {
   const ADMIN = "ADMIN";
@@ -10,18 +11,14 @@ const OrderDetailHeader = ({ orderId, orderDetail, updateOrderDetail }) => {
   const [shippingCompany, setShippingCompany] = useState(null);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/api/userMe`, {
-        credentials: "include"
+    axios.get(`/api/userMe`, {
+        withCredentials: true // credentials: "include"와 동일
       })
       .then(response => {
-        if (!response.ok) return;
-        return response.json();
+          const userData = response.data.data;
+          if (userData.role === ADMIN) setIsSeller(true);
       })
-      .then(data => {
-        const userData = data.data;
-        if (userData.role === ADMIN) setIsSeller(true);
-      })
-  })
+  }, [])
 
   useEffect(() => {
     const invoice = orderDetail.invoice;
@@ -53,6 +50,18 @@ const OrderDetailHeader = ({ orderId, orderDetail, updateOrderDetail }) => {
     }, "shipping");
   }
 
+  const setShipped = (e) => {
+    e.preventDefault();
+    axios.patch(`/api/admin/order/${orderId}/status`, {
+        status: "배송완료"
+      },
+      { withCredentials: true }
+    )
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   return (
     <div className="order-detail-header">
       <Card className="mb-3">
@@ -62,7 +71,8 @@ const OrderDetailHeader = ({ orderId, orderDetail, updateOrderDetail }) => {
             <small>{orderDetail.createdAt}</small>
           </div>
           <div>
-          { isSeller && <InvoiceRegistration orderId={orderId} changeInvoice={handleAppendInvoice}/> }
+            { isSeller && orderDetail.status !== "배송완료" && <Button bg={"info"} className="badge p-2 me-2" onClick={ setShipped }>배송완료 처리</Button> } 
+            { isSeller && orderDetail.status === "준비중" && <InvoiceRegistration orderId={orderId} changeInvoice={handleAppendInvoice}/> }
             <Badge bg={badgeColor} className="p-2">{orderDetail.status}</Badge>
           </div>
         </Card.Header>
@@ -107,21 +117,19 @@ const InvoiceRegistration = ({ orderId, changeInvoice }) => {
 
     if (hasError) return;
 
-    changeInvoice(invoiceNum, shippingCompany)
-    fetch(`/api/admin/order/${orderId}/invoice`, {
-        credentials: "include",
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          shippingCompany: shippingCompany,
-          invoiceNum: invoiceNum,
-        })
+    changeInvoice(invoiceNum, shippingCompany);
+
+    axios.patch(`/api/admin/order/${orderId}/invoice`, {
+        shippingCompany: shippingCompany,
+        invoiceNum: invoiceNum,
+      },
+      { withCredentials: true }
+    )
+      .then(response => {})
+      .catch(err => {
+        const errorMessage = `${err.response?.data?.code}: ${err.response?.data?.message}`;
+        console.log(errorMessage || 'An error occurred');
       })
-      .then((response) => {
-        if (!response.ok) return response.json().then(err => { throw err });
-        return;
-      })
-      .catch((err) => console.log(`${err.code}: ${err.message}`));
     handleClose();
   };
 

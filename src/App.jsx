@@ -1,5 +1,5 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Outlet, Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import "./App.css";
 import Product from "./pages/Product/Product";
 import ProductDetail from "./pages/Product/ProductDetail";
@@ -25,6 +25,8 @@ function App() {
     <>
       <UserProvider>
         <Routes>
+          <Route path="/" element={<Navigate to="/home" />} />
+
           <Route path="/home" element={<Product />} exact />
           <Route path="/product/:id" element={<ProductDetail />} />
 
