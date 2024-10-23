@@ -62,7 +62,7 @@ function Payment() {
             return;
         }
 
-        const phonePattern = /^(010)-?([1-9]{1}[0-9]{3})-?([0-9]{4})$/;
+        const phonePattern = /^(010)-?([0-9]{4})-?([0-9]{4})$/;
         if (!phonePattern.test(tempShippingInfo.phoneNum)) {
             alert("전화번호는 010-XXXX-XXXX 또는 '-'을 제외한 형태입니다.");
             return;
@@ -106,7 +106,7 @@ function Payment() {
             })
             .catch(error => {
                 console.log(error);
-                alert("Order 생성 중 오류가 발생했습니다.");
+                alert(`Order 생성 중 오류가 발생했습니다.\n${error.response.data.message}`);
             });
     };
 
