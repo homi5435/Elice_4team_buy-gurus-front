@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Button, Card, Form, Modal } from 'react-bootstrap';
 import Header from '/src/components/Header';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from "@/utils/interceptors";
 import DaumPostcode from "react-daum-postcode";
 
 function Payment() {
     const location = useLocation();
     const orderItems = location.state?.selectedOrderItems || [];
+
+    const navigate = useNavigate();
 
     // 총 수량 및 가격 계산
     const totalAmount = orderItems.reduce((acc, item) => item.selected ? acc + item.amount : acc, 0);
@@ -99,6 +101,7 @@ function Payment() {
             })
             .then(() => {
                 console.log("Order Create");
+                navigate('/order?type=s');
             })
             .catch(error => {
                 console.log(error);
