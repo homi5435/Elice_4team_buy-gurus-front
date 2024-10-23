@@ -11,7 +11,7 @@ const Order = () => {
   return (
     <div>
       <Header />
-      <OrderedItemList type={type ? type : "c"} />
+      <OrderedItemList type={type === "c" ? "c" : "s"} />
     </div>
   )
 }
@@ -103,11 +103,11 @@ const OrderedItemList = ({ type }) => {
                             <Card.Header>
                               <div className="d-flex justify-content-between align-items-start">
                                 <h4>{order.status}</h4>
-                                <Button variant="outline-secondary"
+                                { type === "c" && <Button variant="outline-secondary"
                                   className="btn x-button"
                                   size="sm"
                                   onClick={(e) => deleteBtnClickHandler(e, order)}
-                                >X</Button>
+                                >X</Button> }
                               </div>
                               <small className="text-muted">{order.createdAt}</small>
                             </Card.Header>

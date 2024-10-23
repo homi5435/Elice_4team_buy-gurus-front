@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../utils/interceptors";
 import logo from "/public/Logo.PNG";
 import { useUserContext } from "../context/UserContext";
 
@@ -10,6 +10,8 @@ const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
   const [role, setRole] = useState("");
+
+  const ADMIN = "ADMIN";
 
   // 로그인 조회
   useEffect(() => {
@@ -81,7 +83,7 @@ const Header = () => {
                     주문내역
                   </Link>
                 </li>
-                {role === "SELLER" && (
+                {role === ADMIN && (
                   <li className="nav-item">
                     <Link to="/order?type=s" className="nav-link">
                       판매내역
