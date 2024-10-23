@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Button, Form, Card, CloseButton, Modal } from 'react-bootstrap';
 import Header from '/src/components/Header';
-import replace from '/src/assets/No_Image_Available.jpg';
 import { useNavigate } from 'react-router-dom';
 
 function OrderItem() {

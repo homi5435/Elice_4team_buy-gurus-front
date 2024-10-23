@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Button, Card, Form, Modal } from 'react-bootstrap';
 import Header from '/src/components/Header';
-import replace from '/src/assets/No_Image_Available.jpg';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import DaumPostcode from "react-daum-postcode";
