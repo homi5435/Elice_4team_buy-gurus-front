@@ -13,8 +13,7 @@ const Product = () => {
         <ProductProvider>
             <div className="container">
                 <Header />
-                {user && user.role === 'ADMIN'}
-                <ProductManagement />
+                {user && user.role === 'ADMIN' ? <ProductManagement /> : null}
                 <ProductSearch />
                 <ProductList />
             </div>

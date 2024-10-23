@@ -10,6 +10,7 @@ import DeleteReviewModal from './Component/DeleteReviewModal'; // 삭제 모달 
 import ConfirmEditModal from './Component/ConfirmEditModal'; // 수정 확인 모달 임포트
 import { useUserContext } from '../../context/UserContext.jsx';
 import DeleteProduct from './Component/DeleteProduct.jsx';
+import Header from '../../components/Header.jsx';
 
 const ProductDetail = () => {
     const { id } = useParams(); // URL 파라미터에서 상품 ID 가져오기
