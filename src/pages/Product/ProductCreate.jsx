@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Col, Row, Container, Image } from 'react-bootstrap';
 import Header from '/src/components/Header';
-import axios from 'axios';
+import axios from "@/utils/interceptors";
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const ProductCreate = () => {

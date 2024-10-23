@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from "@/utils/interceptors";
 import { Container, Row, Col, Button, Form, Card, CloseButton, Modal } from 'react-bootstrap';
 import Header from '/src/components/Header';
 import { useNavigate } from 'react-router-dom';

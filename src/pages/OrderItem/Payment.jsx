@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Button, Card, Form, Modal } from 'react-bootstrap';
 import Header from '/src/components/Header';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
+import axios from "@/utils/interceptors";
 import DaumPostcode from "react-daum-postcode";
 
 function Payment() {
