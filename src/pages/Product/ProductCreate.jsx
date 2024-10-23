@@ -20,23 +20,14 @@ const ProductCreate = () => {
   // 기본값 설정
   useEffect(() => {
   if (location.state) {
-    const { name, price, description, quantity, categoryId, imageFiles } = location.state;
+    const { name, price, description, quantity} = location.state;
     setFormData((prevState) => ({
       ...prevState,
       name: name || prevState.name,
       price: price || prevState.price,
       description: description || prevState.description,
       quantity: quantity || prevState.quantity,
-      category: categoryId || prevState.category,
-      imageFiles: imageFiles || prevState.imageFiles,
     }));
-
-    // 이미지 미리보기 설정
-    if (imageFiles) {
-      const newPreviews = imageFiles.map((file) => URL.createObjectURL(file));
-      setPreviewImages(newPreviews);
-      setFileCount(newPreviews.length);
-    }
   }
 }, [location.state]);
   
