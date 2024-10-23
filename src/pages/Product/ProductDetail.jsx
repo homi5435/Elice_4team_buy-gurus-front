@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from '@/utils/interceptors';
+import axiosInstance from '@/utils/interceptors';
+import axios from 'axios';
 import ReviewForm from './Component/ReviewForm.jsx';
 import ReviewCard from './Component/ReviewCard.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css'; // 부트스트랩 CSS 추가
@@ -113,7 +114,7 @@ const ProductDetail = () => {
 
     const confirmEdit = async (editedReview) => {
         try {
-            const response = await axios.patch(`/api/review/${editedReview.id}`, {
+            const response = await axiosInstance.patch(`/api/review/${editedReview.id}`, {
                 rating: editedReview.rating,
                 comment: editedReview.comment,
                 productId: editedReview.productId,
@@ -130,7 +131,7 @@ const ProductDetail = () => {
 
     const confirmDelete = async () => {
         try {
-            await axios.delete(`/api/review/${editReview.id}`); // 리뷰 삭제 API 호출
+            await axiosInstance.delete(`/api/review/${editReview.id}`); // 리뷰 삭제 API 호출
             setShowDeleteModal(false); // 모달 닫기
             setReviews(reviews.filter(review => review.id !== editReview.id)); // 상태 업데이트
         } catch (error) {
@@ -146,7 +147,7 @@ const ProductDetail = () => {
 
         try {
             console.log(userQuantity)
-            await axios.post(`/api/orderitem/${id}`, {
+            await axiosInstance.post(`/api/orderitem/${id}`, {
                 amount: userQuantity // 수량과 함께 요청
             });
             console.log(userQuantity)

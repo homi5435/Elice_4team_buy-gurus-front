@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from '@/utils/interceptors';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import 'font-awesome/css/font-awesome.min.css';
 

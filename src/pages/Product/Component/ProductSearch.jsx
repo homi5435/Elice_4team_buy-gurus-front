@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from '@/utils/interceptors';
+import axios from 'axios';
 import { useProductContext } from '../../../context/ProductContext';
 
 const ProductSearch = () => {

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Col, Row, Container, Image } from 'react-bootstrap';
 import Header from '/src/components/Header';
-import axios from "@/utils/interceptors";
+import axiosInstance from "@/utils/interceptors";
+import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const ProductCreate = () => {
@@ -116,12 +117,12 @@ const ProductCreate = () => {
     });
 
     if (location.state && location.state.id){
-      axios.patch(`/api/admin/product/${location.state.id}`, data)
+      axiosInstance.patch(`/api/admin/product/${location.state.id}`, data)
       alert("상품 수정이 완료되었습니다.");
       navigate('/home');
     }
     else {
-      axios.post('/api/admin/product', data)
+      axiosInstance.post('/api/admin/product', data)
       alert("상품 추가가 완료되었습니다.");
       navigate('/home');
     }
