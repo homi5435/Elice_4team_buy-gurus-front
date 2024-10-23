@@ -94,13 +94,13 @@ const CategoryManagement = () => {
               id: response.data.id, // 서버에서 반환된 id 사용
               name: response.data.name, // 서버에서 반환된 name 사용
               children: response.data.children || [], // 하위 카테고리 설정
-              isOpen: false, // 기본값으로 카테고리 접힘 상태
+              isOpen: false, // 기본값으로 카테고리 열림 상태
             },
           ]);
         }
         setNewCategoryName(""); // 생성 후 입력 필드 초기화
-        setShowCreateModal(false); // 모달 닫기
-        //nav(0);
+        setShowCreateModal(false); // 모달 열기
+        window.location.reload();
       } catch (error) {
         console.error("Error creating category:", error);
       }
@@ -111,7 +111,7 @@ const CategoryManagement = () => {
   const handleDelete = async () => {
     try {
       if (selectedSubcategory) {
-        // 중분류 삭제는 프론트엔드에서만 처리
+        await axios.delete(`api/admin/category/${selectedSubcategory.id}`);
         const updatedCategories = categories.map((cat) => {
           if (cat.id === selectedCategory.id) {
             return {
