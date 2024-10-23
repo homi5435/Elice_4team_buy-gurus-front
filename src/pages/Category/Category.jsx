@@ -68,15 +68,16 @@ const CategoryManagement = () => {
             parentId: selectedCategory, // 부모 카테고리의 ID
             name: newCategoryName.trim(), // 중분류 이름
           });
+          const newSubcategory = response.data.result; // 백엔드에서 받은 중분류 데이터
+
           setCategories(
             categories.map((cat) => {
               if (cat.id === selectedCategory) {
                 return {
                   ...cat,
-                  children: [...cat.children, response.data], // 응답 데이터를 새로운 중분류로 추가
+                  children: [...(cat.children || []), newSubcategory], // 새로운 중분류 추가
                 };
               }
-              //nav(0);
               return cat;
             })
           );
@@ -86,21 +87,22 @@ const CategoryManagement = () => {
             id: Date.now(), // 임시로 ID 설정
             name: newCategoryName.trim(),
           });
+          console.log(response);
 
           // 응답 데이터로 categories 상태 업데이트
           setCategories([
             ...categories,
             {
-              id: response.data.id, // 서버에서 반환된 id 사용
-              name: response.data.name, // 서버에서 반환된 name 사용
-              children: response.data.children || [], // 하위 카테고리 설정
+              id: response.data.result.id, // 서버에서 반환된 id 사용
+              name: response.data.result.name, // 서버에서 반환된 name 사용
+              //children: response.data.children || [], // 하위 카테고리 설정
               isOpen: false, // 기본값으로 카테고리 열림 상태
             },
           ]);
         }
         setNewCategoryName(""); // 생성 후 입력 필드 초기화
         setShowCreateModal(false); // 모달 열기
-        window.location.reload();
+        //window.location.reload();
       } catch (error) {
         console.error("Error creating category:", error);
       }
