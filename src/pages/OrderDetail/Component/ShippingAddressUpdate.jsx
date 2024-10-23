@@ -1,6 +1,7 @@
 import {useState, useEffect} from "react";
-import {Modal, Button} from "react-bootstrap";
+import {Modal, Button, OverlayTrigger, Tooltip} from "react-bootstrap";
 import ShippingAddressModalBody from "./ShippingAddressModalBody";
+import axios from "@/utils/interceptors";
 
 const ShippingAddressUpdate = ({ addressList, index, apiData, setModalPageNum, setIsPostapiShown, setAddressList }) => {
   const [ name, setName ] = useState("");
@@ -29,25 +30,40 @@ const ShippingAddressUpdate = ({ addressList, index, apiData, setModalPageNum, s
       phoneNum: phoneNum,
       address: `${address}|${addressDetail}`
     }
-    fetch(`/api/user/address/${addressList[index].id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...addressList[index] })
+
+    axios.patch(`/api/user/address/${addressList[index].id}`, {
+        ...addressList[index]
+      }, 
+      { withCredentials: true }
+    )
+      .then(() => {
+          // 성공적으로 처리된 경우 추가 로직을 여기에 작성
       })
-      .then(response => {
-        if(!response.ok) return response.json().then(err => {throw err});
-        return;
-      })
-      .catch((err) => console.log(`${err.code}: ${err.message}`));
+      .catch(error => {
+        const errorMessage = `${error.response?.data?.code}: ${error.response?.data?.message}`;
+        console.log(errorMessage || 'An error occurred');
+      });
     setAddressList(addressList);
 
     setModalPageNum(0);
   }
 
+  const renderTooltip = (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      수정 후 수정된 내용을 선택해야 적용됩니다!
+    </Tooltip>
+  );
+
   return (
     <>
       <Modal.Header closeButton className="d-flex justify-content-between">
         <Modal.Title>배송지 수정</Modal.Title>
+        <OverlayTrigger
+          placement="right"
+          overlay={renderTooltip}
+        >
+          <span className="inspect-trigger">⚠️</span>
+        </OverlayTrigger>
       </Modal.Header>
       <Modal.Body>
         <ShippingAddressModalBody 

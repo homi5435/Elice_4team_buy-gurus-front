@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { Button, Modal } from 'react-bootstrap';
-import axios from 'axios';
+import axios from '@/utils/interceptors';
 import { useNavigate } from 'react-router-dom';
+import { useUserContext } from '../../../context/UserContext';
 
-const DeleteProduct = ({ productId, user, sellerId }) => {
+const DeleteProduct = ({ productId }) => {
     const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
+    const { user } = useUserContext();
 
-    // 삭제 권한 확인
     const hasDeletePermission = () => {
-        return user && (
-            user.role === 'ADMIN' || 
-            user.id === sellerId
-        );
+        if (user) {
+            if (user.role === 'ADMIN') {
+                return true; // 삭제 권한 있음
+            }
+        }
+        return false; // 삭제 권한 없음
     };
 
     // 삭제 처리
@@ -33,14 +36,15 @@ const DeleteProduct = ({ productId, user, sellerId }) => {
 
     return (
         <>
-            <div className="mb-3 d-flex justify-content-end">
-                <Button 
-                    variant="danger"
-                    onClick={() => setShowModal(true)}
-                >
-                    상품 삭제
-                </Button>
-            </div>
+            
+            <Button 
+                variant="danger"
+                onClick={() => setShowModal(true)}
+                className="ms-2"
+            >
+                상품 삭제
+            </Button>
+
 
             <Modal 
                 show={showModal} 

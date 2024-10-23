@@ -5,7 +5,7 @@ import "../css/orderAddressInfo.styles.css";
 
 const OrderAddressInfo = ({ shippingAddress, orderStatus, modalOpenHandler }) => {
   const userInfo = useUserContext();
-  const btnShowFlag = (userInfo?.data?.role === "USER" ? true : false) && (orderStatus === "준비중");
+  const btnShowFlag = (userInfo?.user?.role === "USER" ? true : false) && (orderStatus === "준비중");
 
   return (
     <div className="order-address-info">

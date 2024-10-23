@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Col, Row, Container, Image } from 'react-bootstrap';
 import Header from '/src/components/Header';
-import axios from 'axios';
+import axios from "@/utils/interceptors";
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const ProductCreate = () => {
@@ -20,23 +20,14 @@ const ProductCreate = () => {
   // 기본값 설정
   useEffect(() => {
   if (location.state) {
-    const { name, price, description, quantity, categoryId, imageFiles } = location.state;
+    const { name, price, description, quantity} = location.state;
     setFormData((prevState) => ({
       ...prevState,
       name: name || prevState.name,
       price: price || prevState.price,
       description: description || prevState.description,
       quantity: quantity || prevState.quantity,
-      category: categoryId || prevState.category,
-      imageFiles: imageFiles || prevState.imageFiles,
     }));
-
-    // 이미지 미리보기 설정
-    if (imageFiles) {
-      const newPreviews = imageFiles.map((file) => URL.createObjectURL(file));
-      setPreviewImages(newPreviews);
-      setFileCount(newPreviews.length);
-    }
   }
 }, [location.state]);
   
@@ -55,8 +46,16 @@ const ProductCreate = () => {
   // 카테고리 조회
   useEffect(() => {
     axios.get('/api/category')
-        .then(response => setCategories(response.data))
-        .catch(error => console.log(error));
+        .then(
+          response => setCategories(response.data),
+          console.log("카테고리 조회")
+      )
+        .catch(
+          error => {
+            console.log(error)
+            alert("카테고리 조회 중 오류가 발생했습니다.");
+          }
+        );
     }, []);
 
   // 대분류 선택 시 소분류 업데이트
@@ -117,12 +116,12 @@ const ProductCreate = () => {
     });
 
     if (location.state && location.state.id){
-      axios.patch(`/api/product/${location.state.id}`, data)
+      axios.patch(`/api/admin/product/${location.state.id}`, data)
       alert("상품 수정이 완료되었습니다.");
       navigate('/home');
     }
     else {
-      axios.post('/api/product', data)
+      axios.post('/api/admin/product', data)
       alert("상품 추가가 완료되었습니다.");
       navigate('/home');
     }
@@ -227,6 +226,9 @@ const ProductCreate = () => {
 
             <Form.Group controlId="formFile">
               <Form.Label>상품 이미지</Form.Label>
+              <Form.Text className="text-danger" style={{marginLeft: '0.5rem'}}>
+                {`경고: 이미지 파일은 9:16 비율로 업로드해 주세요.`}
+              </Form.Text>
               <Form.Control
                 type="file"
                 name="imageFiles"

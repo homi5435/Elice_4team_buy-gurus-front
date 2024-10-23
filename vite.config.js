@@ -10,11 +10,11 @@ export default defineConfig({
     alias:{
       '@': path.resolve(__dirname, 'src'),
     }
-  },
-  server: {
-    proxy: {
-      '/api': 'http://localhost:8080'
-      }
-    }
+  }
+  // server: {
+  //   proxy: {
+  //     '/api': 'http://localhost:8080'
+  //     }
+  //   }
   }
 )
