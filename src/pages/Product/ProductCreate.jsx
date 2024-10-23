@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Col, Row, Container, Image } from 'react-bootstrap';
 import Header from '/src/components/Header';
-import axios from 'axios';
+import axios from "@/utils/interceptors";
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const ProductCreate = () => {
@@ -46,8 +46,16 @@ const ProductCreate = () => {
   // 카테고리 조회
   useEffect(() => {
     axios.get('/api/category')
-        .then(response => setCategories(response.data))
-        .catch(error => console.log(error));
+        .then(
+          response => setCategories(response.data),
+          console.log("카테고리 조회")
+      )
+        .catch(
+          error => {
+            console.log(error)
+            alert("카테고리 조회 중 오류가 발생했습니다.");
+          }
+        );
     }, []);
 
   // 대분류 선택 시 소분류 업데이트
