@@ -72,22 +72,12 @@ function Payment() {
         productId: orderItem.product.id 
       }));
 
-      axios.post('/api/user/address', 
-        {
-          name: shippingInfo.name,
-          address: shippingInfo.address,
-          phoneNum: shippingInfo.phoneNum
-        },
-        {
-          withCredentials: true
-        });
-
       axios.post('/api/order', 
       {
         shippingFee: shippingFee,
         orderInfoList: orderInfoList,
         shippingInfo: shippingInfo,
-        sellerId: 1 // orderItem.product.sellerId를 보낼 예정
+        sellerId: 1 // 관리자Id
       },
       {
         withCredentials: true
