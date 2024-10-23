@@ -71,13 +71,17 @@ function Payment() {
         quantity: orderItem.amount,
         productId: orderItem.product.id 
       }));
-
-      axios.post('/api/order', 
-      {
+    
+      const orderRequests = {
         shippingFee: shippingFee,
         orderInfoList: orderInfoList,
         shippingInfo: shippingInfo,
         sellerId: 1 // 관리자Id
+      };
+    
+      axios.post('/api/order', 
+      {
+        orderRequests: [orderRequests]
       },
       {
         withCredentials: true
