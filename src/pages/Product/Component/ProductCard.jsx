@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import 'font-awesome/css/font-awesome.min.css';
+import '../style/ProductCard.css';
 
 const ProductCard = ({ product }) => {
     const [reviews, setReviews] = useState([]);
@@ -58,7 +59,7 @@ const ProductCard = ({ product }) => {
     };
 
     return (
-        <div className="card mb-3" style={{ maxWidth: "740px", cursor: 'pointer' }} onClick={handleCardClick}>
+        <div className="product-card mb-3" style={{ maxWidth: "740px", cursor: 'pointer' }} onClick={handleCardClick}>
             <div className="row g-0">
                 <div className="col-md-4">
                     {product.imageUrls && product.imageUrls.length > 0 && (

@@ -1,0 +1,54 @@
+.review-card {
+    border: 1px solid #e0e0e0; /* 리뷰 카드 테두리 색상 */
+    border-radius: 8px; /* 둥글게 처리 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    margin-bottom: 20px; /* 카드 간의 간격 */
+}
+
+.review-card .card-body {
+    display: flex; /* 플렉스 박스로 설정 */
+    justify-content: space-between; /* 공간 배분 */
+    padding: 15px; /* 내부 여백 */
+}
+
+.review-card .review-content {
+    flex: 1; /* 버튼 영역과 코멘트 영역이 겹치지 않도록 공간을 차지 */
+    margin-right: 10px; /* 버튼과의 간격 조정 */
+}
+
+.review-card .review-buttons {
+    display: flex; 
+    flex-direction: column; /* 버튼을 세로로 정렬 */
+    justify-content: center; /* 버튼 중앙 정렬 */
+}
+
+.review-card .text-warning {
+    color: #ffc107; /* 평점 별 색상 (노란색) */
+}
+
+.review-card .text-muted {
+    color: #6c757d; /* 일반 텍스트 색상 */
+}
+
+.review-card .btn {
+    border-radius: 5px; /* 버튼 둥글게 */
+    margin: 5px; /* 버튼 간 여백 */
+}
+
+.review-card .btn-secondary {
+    background-color: #6c757d; /* 수정 버튼 색상 */
+    border-color: #6c757d; /* 수정 버튼 테두리 색상 */
+}
+
+.review-card .btn-secondary:hover {
+    background-color: #5a6268; /* 수정 버튼 호버 색상 */
+}
+
+.review-card .btn-danger {
+    background-color: #dc3545; /* 삭제 버튼 색상 */
+    border-color: #dc3545; /* 삭제 버튼 테두리 색상 */
+}
+
+.review-card .btn-danger:hover {
+    background-color: #c82333; /* 삭제 버튼 호버 색상 */
+}

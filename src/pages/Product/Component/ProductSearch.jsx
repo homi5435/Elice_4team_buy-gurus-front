@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useProductContext } from '../../../context/ProductContext';
+import '../style/ProductSearch.css';
 
 const ProductSearch = () => {
     const { setProducts } = useProductContext();
@@ -109,7 +110,7 @@ const ProductSearch = () => {
                                 value={selectedSubCategory}
                                 onChange={(e) => setSelectedSubCategory(e.target.value)}
                             >
-                                <option value="">카테고리 소분류</option>
+                                <option value="">카테고리 중분류</option>
                                 {subCategories.map((subCategory) => (
                                     <option key={subCategory.id} value={subCategory.id}>
                                         {subCategory.name}
