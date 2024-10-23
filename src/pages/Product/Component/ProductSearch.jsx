@@ -32,9 +32,9 @@ const ProductSearch = () => {
         fetchInitialData();
     }, [setProducts]);
 
-    const handleCategoryChange = (e) => {
-        const categoryId = e.target.value;
-        setSelectedCategory(categoryId);
+  const handleCategoryChange = (e) => {
+    const categoryId = e.target.value;
+    setSelectedCategory(categoryId);
 
         const selectedCategory = categories.find(cat => cat.id.toString() === categoryId);
         if (selectedCategory) {

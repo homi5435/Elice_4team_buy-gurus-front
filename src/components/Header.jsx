@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "../utils/interceptors";
+import axios from "axios";
 import logo from "/public/Logo.PNG";
 import { useUserContext } from "../context/UserContext";
+import axiosInstance from "../utils/interceptors";
 
 const Header = () => {
   const nav = useNavigate();
@@ -15,8 +16,8 @@ const Header = () => {
 
   // 로그인 조회
   useEffect(() => {
-    axios
-      .get("/api/userMe")
+    axiosInstance
+      .get("/api/userMe?no-redirect")
       .then((response) => {
         setUser(response.data.data);
         setUserName(response.data.data.nickname);
