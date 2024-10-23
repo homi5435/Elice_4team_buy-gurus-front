@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '@/utils/interceptors';
 
 const ReviewForm = ({ productId, setReviews }) => {
     const [newReview, setNewReview] = useState('');
@@ -15,7 +15,7 @@ const ReviewForm = ({ productId, setReviews }) => {
                 rating,
                 comment: newReview,
             });
-            setReviews((prevReviews) => [...prevReviews, response.data]);
+            setReviews((prevReviews) => [response.data, ...prevReviews]);
             setNewReview('');
             setRating(1);
         } catch (error) {
