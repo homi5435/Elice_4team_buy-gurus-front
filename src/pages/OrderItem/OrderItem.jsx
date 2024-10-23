@@ -13,8 +13,14 @@ function OrderItem() {
     axios.get('/api/orderitem', {   
       withCredentials: true
   })
-      .then(response => setOrderItem(response.data))
-      .catch(error => console.log(error));
+      .then(
+        response => setOrderItem(response.data),
+        console.log("장바구니 조회")
+    )
+      .catch(error => { 
+        console.log(error),
+        alert("장바구니 조회 중 오류가 발생했습니다.")
+      });
   }, []);
 
   // 총 수량 및 가격 계산
@@ -50,8 +56,12 @@ function OrderItem() {
     })
       .then(() => {
         setOrderItem([]);
+        console.log("장바구니 전체 삭제");
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error)
+        alert("장바구니 전체 삭제 중 오류가 발생했습니다.")
+      });
   };
 
   // 선택 삭제 핸들러
@@ -59,8 +69,12 @@ function OrderItem() {
     axios.delete(`/api/orderitem/${id}`)
       .then(() => {
         setOrderItem(orderItems.filter((orderItem) => orderItem.id !== id)); // 해당 id를 가진 장바구니를 제외하고 set
+        console.log("장바구니 선택 삭제");
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error),
+        alert("장바구니 선택 삭제 중 오류가 발생했습니다.")
+      });
   };
 
   // 모달
@@ -79,16 +93,29 @@ function OrderItem() {
       {
         headers: { "Content-Type": `application/json`}
       })
+      .then(() => {
+        console.log("장바구니 Update")
+      })
+      .catch(error => {
+      console.log(error),
+      alert("장바구니 Update 중 오류가 발생했습니다.")
+      })
     )
   }
 
   // 결제하기 핸들러
-  const handlePayment = () => {
-    handleUpdate();
-    alert("결제하기 페이지로 이동합니다.");
-    const selectedOrderItems = orderItems.filter((orderItem) => orderItem.selected)
-    navigate('/Payment', { state: { selectedOrderItems } });
-  };
+const handlePayment = () => {
+  const selectedOrderItems = orderItems.filter((orderItem) => orderItem.selected);
+  
+  if (selectedOrderItems.length === 0) {
+    alert("선택된 상품이 없습니다. 결제를 진행할 수 없습니다.");
+    return;
+  }
+
+  handleUpdate();
+  alert("결제하기 페이지로 이동합니다.");
+  navigate('/Payment', { state: { selectedOrderItems } });
+};
   
   return (
     <div>
