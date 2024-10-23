@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
 const EditReviewModal = ({ show, onHide, review, onSave }) => {
     const [editedReview, setEditedReview] = React.useState(review);
+
+    useEffect(() => {
+        setEditedReview(review);
+    }, [review]);
 
     const handleSave = () => {
         onSave(editedReview); // 수정된 리뷰를 부모에게 전달

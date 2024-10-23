@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '@/utils/interceptors';
 import { useNavigate } from 'react-router-dom';
 import 'font-awesome/css/font-awesome.min.css';
 
@@ -11,10 +11,9 @@ const ProductCard = ({ product }) => {
     useEffect(() => {
         const fetchReviews = async () => {
             try {
-                const response = await axios.get(`/api/product/${product.id}/review`);
+                const response = await axios.get(`/api/product/${product.id}/review?page=0&size=10`);
                 // response.data가 배열인지 확인하고, 배열이 아니라면 적절히 변환
-                const reviewsData = Array.isArray(response.data) ? response.data : 
-                                  response.data.reviews ? response.data.reviews : [];
+                const reviewsData = response.data.content || [];
                 
                 setReviews(reviewsData);
 
