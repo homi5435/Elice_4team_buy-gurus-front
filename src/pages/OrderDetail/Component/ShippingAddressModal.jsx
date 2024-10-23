@@ -6,6 +6,7 @@ import ShippingAddressCreate from "./ShippingAddressCreate";
 import ShippingAddressUpdate from "./ShippingAddressUpdate";
 import ShippingAddressSelect from "./ShippingAddressSelect";
 import "../css/shippingAddressModal.styles.css";
+import axios from "@/utils/interceptors";
 
 const ShippingAddressModal = ({isOpen, orderId, onClose, setData}) => {
   const [isAlertShown, setIsAlertShown] = useState(false);
@@ -17,19 +18,14 @@ const ShippingAddressModal = ({isOpen, orderId, onClose, setData}) => {
   const [apiData, setApiData] = useState(null);
 
   useEffect(() => {
-    fetch(`/api/user/address`)
+    axios.get(`/api/user/address`, { withCredentials: true })
       .then(response => {
-        if (!response.ok) return response.json().then(err => {throw err});
-        return response.json();
-      })
-      .then(data => {
-        data = data.data;
-        const datas = [];
-        data.addressInfoDetailList.map(addressInfo => datas.push(new AddressList(addressInfo)));
+        const datas = response.data.addressInfoDetailList?.map(addressInfo => new AddressList(addressInfo)) || [];
         setShippingAddressList(datas);
       })
-      .catch((err) => {
-        console.log(`${err.code}: ${err.message}`);
+      .catch(error => {
+        const errorMessage = `${error.response?.data?.code}: ${error.response?.data?.message}`;
+        console.log(errorMessage || 'An error occurred');
       })
   }, [])
 
@@ -137,14 +133,14 @@ const AlertAddressDelete = ({addressId, isShow, setShow, addressIndex, removeHan
     setShow(false);
   }
   const handleDeleteBtn = () => {
-    fetch(`/api/user/address/${addressId}`, {
-      "method": "DELETE",
-    })
+    axios.delete(`/api/user/address/${addressId}`, { withCredentials: true })
       .then(response => {
-        if (!response.ok) return response.json().then(err => {throw err})
         removeHandler(addressIndex);
       })
-      .catch((err) => console.log(`${err.code}: ${err.message}`));
+      .catch(error => {
+        const errorMessage = `${error.response?.data?.code}: ${error.response?.data?.message}`;
+        console.log(errorMessage || 'An error occurred');
+      });
     setShow(false);
   }
 
