@@ -1,7 +1,8 @@
 import {Card, Row, Col, Badge, Button, Modal, Form} from "react-bootstrap";
 import {useState, useEffect} from "react";
 import "../css/orderDetailHeader.styles.css";
-import axios from "@/utils/interceptors";
+import axios from "axios";
+import axiosInstance from "@/utils/interceptors";
 
 const OrderDetailHeader = ({ orderId, orderDetail, updateOrderDetail }) => {
   const ADMIN = "ADMIN";
@@ -11,7 +12,7 @@ const OrderDetailHeader = ({ orderId, orderDetail, updateOrderDetail }) => {
   const [shippingCompany, setShippingCompany] = useState(null);
 
   useEffect(() => {
-    axios.get(`/api/userMe`, {
+    axiosInstance.get(`/api/userMe`, {
         withCredentials: true // credentials: "include"와 동일
       })
       .then(response => {
@@ -52,7 +53,7 @@ const OrderDetailHeader = ({ orderId, orderDetail, updateOrderDetail }) => {
 
   const setShipped = (e) => {
     e.preventDefault();
-    axios.patch(`/api/admin/order/${orderId}/status`, {
+    axiosInstance.patch(`/api/admin/order/${orderId}/status`, {
         status: "배송완료"
       },
       { withCredentials: true }
@@ -119,7 +120,7 @@ const InvoiceRegistration = ({ orderId, changeInvoice }) => {
 
     changeInvoice(invoiceNum, shippingCompany);
 
-    axios.patch(`/api/admin/order/${orderId}/invoice`, {
+    axiosInstance.patch(`/api/admin/order/${orderId}/invoice`, {
         shippingCompany: shippingCompany,
         invoiceNum: invoiceNum,
       },

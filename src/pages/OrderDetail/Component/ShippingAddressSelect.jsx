@@ -1,6 +1,6 @@
 import {Tooltip, Modal, OverlayTrigger, ListGroup, Button} from "react-bootstrap";
 import "../css/shippingAddressSelect.styles.css";
-import axios from "@/utils/interceptors";
+import axiosInstance from "@/utils/interceptors";
 
 const ShippingAddressSelect = ({ 
   shippingAddressList, setData, orderId, handleModalClose,
@@ -15,7 +15,7 @@ const ShippingAddressSelect = ({
   const selectShippingAddressHandler = (e, address) => {
     if (setData !== null) {
       setData(address)
-      axios.patch(`/api/order/${orderId}/address`, {
+      axiosInstance.patch(`/api/order/${orderId}/address`, {
             name: address.name,
             phoneNum: address.phoneNum,
             address: address.address
