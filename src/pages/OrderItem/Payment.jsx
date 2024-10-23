@@ -124,7 +124,7 @@ function Payment() {
                 {orderItems.map((orderItem) => (
                   <Col key={orderItem.id} xs={12} className="mb-3">
                     <Card className="d-flex flex-row align-items-center border p-3">
-                      <Card.Img src={replace} className="img-fluid me-3" style={{ maxWidth: "150px" }} />
+                      <Card.Img src={orderItem.product.imageUrl} className="img-fluid me-3" style={{ maxWidth: "150px" }} />
                       <Card.Body>
                         <Card.Title>{orderItem.product.name}</Card.Title>
                         <Card.Text>가격: {orderItem.product.price}₩</Card.Text>

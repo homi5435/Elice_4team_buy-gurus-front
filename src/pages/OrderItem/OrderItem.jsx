@@ -110,7 +110,7 @@ function OrderItem() {
                   onChange={() => handleSelectChange(orderItem.id)}
                   className="me-3"
                 />
-                <Card.Img src={replace} className="img-fluid me-3" style={{ maxWidth: "150px" }} />
+                <Card.Img src={orderItem.product.imageUrl} className="img-fluid me-3" style={{ maxWidth: "150px" }} />
                 <Card.Body>
                   <Card.Title>{orderItem.product.name}</Card.Title>
                   <Card.Text>
