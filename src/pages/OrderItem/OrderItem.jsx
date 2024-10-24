@@ -18,8 +18,7 @@ function OrderItem() {
         console.log("장바구니 조회")
     )
       .catch(error => { 
-        console.log(error),
-        alert("장바구니 조회 중 오류가 발생했습니다.")
+        console.log(error)
       });
   }, []);
 
