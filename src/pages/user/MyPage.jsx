@@ -149,13 +149,14 @@ const MyPage = () => {
                   setUpdatedInfo({ ...updatedInfo, email: e.target.value })
                 }
               />
-              <Button
-                className="mt-2"
-                onClick={sendVerificationCode}
-                disabled={isEmailVerified}
-              >
-                인증 코드 받기
-              </Button>
+              <div className="mt-2 mb-2">
+                <Button
+                  onClick={sendVerificationCode}
+                  disabled={isEmailVerified}
+                >
+                  인증 코드 받기
+                </Button>
+              </div>
               {isCodeSent && !isEmailVerified && (
                 <>
                   <Form.Label>인증 코드</Form.Label>
