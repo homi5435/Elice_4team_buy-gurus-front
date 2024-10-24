@@ -94,15 +94,6 @@ function Login() {
             >
               Naver 로그인
             </BootstrapButton>
-            <BootstrapButton
-              variant="outline-warning"
-              href={`${
-                import.meta.env.VITE_APP_BACKEND_URL
-              }/oauth2/authorization/kakao`}
-              className="w-100"
-            >
-              Kakao 로그인
-            </BootstrapButton>
           </div>
         </Col>
       </Row>
