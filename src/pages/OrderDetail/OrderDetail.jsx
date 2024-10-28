@@ -6,6 +6,8 @@ import OrderDetailDrawer from "./component/OrderDetailDrawer";
 import ShippingAddressModal from "./component/ShippingAddressModal";
 import {OrderResponse} from "@/objects/OrderResponse"
 import "./orderDetail.styles.css"
+import Header from "@/components/Header";
+import axiosInstance from "@/utils/interceptors";
 
 const OrderDetail = () => {
   const [ orderDetail, setOrderDetail ] = useState(null);
@@ -16,18 +18,17 @@ const OrderDetail = () => {
   const { orderId } = useParams();
 
   useEffect(() => {
-    fetch(`/api/order/${orderId}`)
+    axiosInstance.get(`/api/order/${orderId}`)
       .then(response => {
-        if (!response.ok) return response.json().then(err => {throw err});
-        return response.json();
+        const data = response.data.data;
+        const orderResponse = new OrderResponse(data);
+        setOrderDetail(orderResponse);
+        setShippingAddress(orderResponse.shippingAddress);
       })
-      .then(data => {
-        data = data.data;
-        const orderResponse = new OrderResponse(data)
-        setOrderDetail(orderResponse)
-        setShippingAddress(orderResponse.shippingAddress)
-      })
-      .catch((err) => console.log(`${err.code}: ${err.message}`));
+      .catch(error => {
+        const errorMessage = `${error.response?.data?.code}: ${error.response?.data?.message}`;
+        console.log(errorMessage || 'An error occurred');
+      });
   }, []);
 
   useEffect(() => {
@@ -48,7 +49,9 @@ const OrderDetail = () => {
   }
 
   return (
-    <div className="order-detail">
+    <>
+      <Header />
+      <div className="order-detail">
       { !loading && <OrderDetailHeader orderId={orderId} orderDetail={orderDetail} updateOrderDetail={updateOrderDetail} /> }
       { !loading && <OrderAddressInfo shippingAddress={shippingAddress} orderStatus={orderDetail.status} modalOpenHandler={setIsModalOpen} />}  
 
@@ -56,6 +59,8 @@ const OrderDetail = () => {
 
       { !loading && <OrderDetailDrawer orderDetail={orderDetail} /> }
     </div>
+    </>
+
   )
 }
 

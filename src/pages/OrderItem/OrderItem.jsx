@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios from "@/utils/interceptors";
 import { Container, Row, Col, Button, Form, Card, CloseButton, Modal } from 'react-bootstrap';
 import Header from '/src/components/Header';
-import replace from '/src/assets/No_Image_Available.jpg';
 import { useNavigate } from 'react-router-dom';
 
 function OrderItem() {
   const [orderItems, setOrderItem] = useState([]);
+  const [showModalId, setShowModalId] = useState(null); // 각 아이템별 모달 관리
   const navigate = useNavigate();
 
   // 장바구니 조회
@@ -14,8 +14,13 @@ function OrderItem() {
     axios.get('/api/orderitem', {   
       withCredentials: true
   })
-      .then(response => setOrderItem(response.data))
-      .catch(error => console.log(error));
+      .then(
+        response => setOrderItem(response.data),
+        console.log("장바구니 조회")
+    )
+      .catch(error => { 
+        console.log(error)
+      });
   }, []);
 
   // 총 수량 및 가격 계산
@@ -51,8 +56,12 @@ function OrderItem() {
     })
       .then(() => {
         setOrderItem([]);
+        console.log("장바구니 전체 삭제");
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error)
+        alert("장바구니 전체 삭제 중 오류가 발생했습니다.")
+      });
   };
 
   // 선택 삭제 핸들러
@@ -60,14 +69,13 @@ function OrderItem() {
     axios.delete(`/api/orderitem/${id}`)
       .then(() => {
         setOrderItem(orderItems.filter((orderItem) => orderItem.id !== id)); // 해당 id를 가진 장바구니를 제외하고 set
+        console.log("장바구니 선택 삭제");
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error),
+        alert("장바구니 선택 삭제 중 오류가 발생했습니다.")
+      });
   };
-
-  // 모달
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
 
   // 장바구니 수정 핸들러
   const handleUpdate = () => {
@@ -80,106 +88,126 @@ function OrderItem() {
       {
         headers: { "Content-Type": `application/json`}
       })
+      .then(() => {
+        console.log("장바구니 Update")
+      })
+      .catch(error => {
+      console.log(error),
+      alert("장바구니 Update 중 오류가 발생했습니다.")
+      })
     )
   }
 
   // 결제하기 핸들러
   const handlePayment = () => {
-    handleUpdate();
+    const selectedOrderItems = orderItems.filter((orderItem) => orderItem.selected);
+    
+    if (selectedOrderItems.length === 0) {
+      alert("선택된 상품이 없습니다. 결제를 진행할 수 없습니다.");
+      return;
+    }
+
+    // 재고 확인
+    for (let orderItem of selectedOrderItems) {
+      if (orderItem.amount > orderItem.product.quantity) {
+        alert("상품의 재고 보다 많은 수량을 주문할 수 없습니다.");
+        return;
+      }
+    }
+
+  handleUpdate();
     alert("결제하기 페이지로 이동합니다.");
-    const selectedOrderItems = orderItems.filter((orderItem) => orderItem.selected)
     navigate('/Payment', { state: { selectedOrderItems } });
   };
-  
+
   return (
     <div>
       <Header />
 
       <main>
-      <Container className="py-5">
-        <h1 className="mb-4">장바구니</h1>
+        <Container className="py-5">
+          <h1 className="mb-4">장바구니</h1>
 
-        {/* 장바구니 목록 */}
-        <Row id="order-items">
-          {orderItems.map((orderItem) => (
-            <Col key={orderItem.id} xs={12} className="mb-3">
-              <Card className="d-flex flex-row align-items-center border p-3">
-                <Form.Check 
-                  type="checkbox"
-                  checked={orderItem.selected || false}
-                  onChange={() => handleSelectChange(orderItem.id)}
-                  className="me-3"
-                />
-                <Card.Img src={replace} className="img-fluid me-3" style={{ maxWidth: "150px" }} />
-                <Card.Body>
-                  <Card.Title>{orderItem.product.name}</Card.Title>
-                  <Card.Text>
-                    가격: {orderItem.product.price}₩
-                  </Card.Text>
-                  <Form.Group className="input-group">
-                    <Form.Control
-                      type="number"
-                      value={orderItem.amount}
-                      min="1"
-                      onChange={(e) => handleAmountChange(orderItem.id, e.target.value)}
-                    />
-                    <span className="input-group-text">개</span>
-                  </Form.Group>
-                </Card.Body>
-                <CloseButton
-                  className="position-absolute top-0 end-0 m-2"
-                  onClick={handleShow}
-                />
+          {/* 장바구니 목록 */}
+          <Row id="order-items">
+            {orderItems.map((orderItem) => (
+              <Col key={orderItem.id} xs={12} className="mb-3">
+                <Card className="d-flex flex-row align-items-center border p-3">
+                  <Form.Check 
+                    type="checkbox"
+                    checked={orderItem.selected || false}
+                    onChange={() => handleSelectChange(orderItem.id)}
+                    className="me-3"
+                  />
+                  <Card.Img src={orderItem.product.imageUrl} className="img-fluid me-3" style={{ maxWidth: "150px" }} />
+                  <Card.Body>
+                    <Card.Title>{orderItem.product.name}</Card.Title>
+                    <Card.Text>
+                      가격: {orderItem.product.price}₩
+                    </Card.Text>
+                    <Form.Group className="input-group">
+                      <Form.Control
+                        type="number"
+                        value={orderItem.amount}
+                        min="1"
+                        onChange={(e) => handleAmountChange(orderItem.id, e.target.value)}
+                      />
+                      <span className="input-group-text">개</span>
+                    </Form.Group>
+                  </Card.Body>
+                  <CloseButton
+                    className="position-absolute top-0 end-0 m-2"
+                    onClick={() => setShowModalId(orderItem.id)}
+                  />
+                </Card>
 
                 {/* 모달 컴포넌트 */}
-                <Modal show={show} onHide={handleClose}>
+                <Modal show={showModalId === orderItem.id} onHide={() => setShowModalId(null)}>
                   <Modal.Header closeButton>
                     <Modal.Title>선택하신 상품을 삭제 하시겠습니까?</Modal.Title>
                   </Modal.Header>
                   <Modal.Footer className="d-flex justify-content-start">
                     <Button variant="primary" className="me-2" onClick={() => {
                       handleDelete(orderItem.id)
-                      handleClose();
+                      setShowModalId(null);
                     }}>
                       예
                     </Button>
-                    <Button variant="secondary" onClick={handleClose}>
+                    <Button variant="secondary" onClick={() => setShowModalId(null)}>
                       아니오
                     </Button>
                   </Modal.Footer>
                 </Modal>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+              </Col>
+            ))}
+          </Row>
 
-        {/* 전체삭제 버튼 */}
-        <div className="mb-3">
-          <Button variant="warning" className="ms-2" onClick={handleDeleteAll}>
-            전체삭제
-          </Button>
-        </div>
-
-        {/* 총 수량 및 총 가격 */}
-        <Row className="mt-4">
-          <Col md={6}>
-            <p>
-              <strong>총 수량:</strong> {totalAmount}개
-            </p>
-            <p>
-              <strong>총 가격:</strong> {totalPrice}₩
-            </p>
-          </Col>
-          <Col md={6} className="text-end">
-            <Button variant="primary" onClick={handlePayment}>
-              결제하기
+          {/* 전체삭제 버튼 */}
+          <div className="mb-3">
+            <Button variant="warning" className="ms-2" onClick={handleDeleteAll}>
+              전체삭제
             </Button>
-          </Col>
-        </Row>
-      </Container>
+          </div>
+
+          {/* 총 수량 및 총 가격 */}
+          <Row className="mt-4">
+            <Col md={6}>
+              <p>
+                <strong>총 수량:</strong> {totalAmount}개
+              </p>
+              <p>
+                <strong>총 가격:</strong> {totalPrice}₩
+              </p>
+            </Col>
+            <Col md={6} className="text-end">
+              <Button variant="primary" onClick={handlePayment}>
+                결제하기
+              </Button>
+            </Col>
+          </Row>
+        </Container>
       </main>
     </div>
-    
   );
 }
 

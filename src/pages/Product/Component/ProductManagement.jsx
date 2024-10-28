@@ -1,17 +1,22 @@
 import React from 'react';
 import { Navbar, Nav } from 'react-bootstrap';
+import { useUserContext } from '../../../context/UserContext';
+import '../style/ProductManagement.css';
 
-const ProductManagement = ({ role }) => {
+const ProductManagement = () => {
+    const { user } = useUserContext();
+
+    // userInfo가 null이거나 로딩 중일 때 처리
+    if (!user) {
+        return <div>Loading...</div>; // 또는 다른 로딩 표시
+    }
+
     return (
         <Navbar bg="light" expand="lg">
-            <Navbar.Brand href="#home">상품 관리 시스템</Navbar.Brand>
+            <Navbar.Brand href="#home">상품 관리</Navbar.Brand>
             <Nav className="me-auto">
-                {role === 'ADMIN' && (
-                    <Nav.Link href="#category-management">카테고리 관리</Nav.Link>
-                )}
-                {(role === 'ADMIN' || role === 'SELLER') && (
-                    <Nav.Link href="#product-registration">상품 등록</Nav.Link>
-                )}
+                <Nav.Link href="/categoryManagement">카테고리 관리</Nav.Link>
+                <Nav.Link href="/product-create">상품 등록</Nav.Link>
             </Nav>
         </Navbar>
     );

@@ -1,46 +1,56 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 import ProductCard from './ProductCard';
 import { Pagination } from 'react-bootstrap';
+import { useProductContext } from '../../../context/ProductContext'; // Context import
+import '../style/ProductList.css';
 
 const ProductList = () => {
-    const [products, setProducts] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
-    const itemsPerPage = 1;
+    const { products } = useProductContext(); // Context에서 products 가져오기
+    const [currentPage, setCurrentPage] = React.useState(1);
+    const itemsPerPage = 9;
 
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const response = await axios.get(`/api/product?page=${currentPage - 1}&size=${itemsPerPage}`); // 실제 API URL로 변경
-                setProducts(response.data.content);
-                setTotalPages(response.data.totalPages);
-            } catch (error) {
-                console.error('상품을 가져오는 데 오류가 발생했습니다:', error);
-            }
-        };
+    const totalPages = Math.ceil(products.length / itemsPerPage);
+    const paginatedProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-        fetchProducts();
-    }, [currentPage]);
-    
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
     return (
         <div>
             <div className="row">
-                {products.map((product) => (
+                {paginatedProducts.map((product) => (
                     <div className="col-md-4 mb-4" key={product.id}>
                         <ProductCard product={product} />
                     </div>
                 ))}
             </div>
             <Pagination className="my-4">
-                <Pagination.Prev onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
-                <Pagination.Item active>{currentPage}</Pagination.Item>
-                {Array.from({ length: totalPages }, (_, index) => (
-                    <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => setCurrentPage(index + 1)}>
-                        {index + 1}
-                    </Pagination.Item>
-                ))}
-                <Pagination.Next onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
+                <Pagination.Prev onClick={() => handlePageChange(Math.max(currentPage - 1, 1))} disabled={currentPage === 1} />
+                {currentPage > 1 && (
+                    <Pagination.Item onClick={() => handlePageChange(1)}>1</Pagination.Item>
+                )}
+                {currentPage > 3 && <Pagination.Ellipsis />}
+                {Array.from({ length: totalPages }, (_, index) => {
+                    const pageNumber = index + 1;
+                    if (pageNumber < currentPage - 1 || pageNumber > currentPage + 1) {
+                        return null; // 현재 페이지의 바로 앞뒤 페이지만 표시
+                    }
+                    return (
+                        <Pagination.Item 
+                            key={pageNumber} 
+                            active={pageNumber === currentPage} 
+                            onClick={() => handlePageChange(pageNumber)}
+                        >
+                            {pageNumber}
+                        </Pagination.Item>
+                    );
+                })}
+                {currentPage < totalPages - 2 && <Pagination.Ellipsis />}
+                {totalPages > 1 && (
+                    <Pagination.Item onClick={() => handlePageChange(totalPages)}>{totalPages}</Pagination.Item>
+                )}
+                <Pagination.Next onClick={() => handlePageChange(Math.min(currentPage + 1, totalPages))} disabled={currentPage === totalPages} />
             </Pagination>
         </div>
     );

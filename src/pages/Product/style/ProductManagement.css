@@ -1,0 +1,31 @@
+.navbar {
+    margin-bottom: 20px; /* Navbar 아래에 여백 추가 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    overflow: hidden; /* 내부 요소가 모서리 바깥으로 나가지 않도록 설정 */
+}
+
+.navbar-brand {
+    font-weight: bold; /* 브랜드 텍스트 두껍게 */
+    margin-left: 25px;
+}
+
+.nav-link {
+    font-size: 1.1rem; /* 네비게이션 링크 크기 조정 */
+    transition: color 0.2s; /* 호버 시 색상 변화를 부드럽게 */
+    border-radius: 5px; /* 네비게이션 링크 모서리 둥글게 */
+    margin-left: 5px;
+}
+
+.nav-link:hover {
+    color: #007bff; /* 호버 시 색상 변경 */
+    background-color: rgba(0, 123, 255, 0.1); /* 호버 시 배경 색상 추가 */
+}
+
+.loading {
+    text-align: center; /* 로딩 텍스트 중앙 정렬 */
+    font-size: 1.5rem; /* 로딩 텍스트 크기 조정 */
+    margin-top: 50px; /* 상단 여백 추가 */
+    border-radius: 5px; /* 로딩 텍스트 박스 모서리 둥글게 */
+    padding: 20px; /* 여백 추가 */
+    background-color: #f8f9fa; /* 배경 색상 추가 */
+}

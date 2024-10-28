@@ -1,5 +1,6 @@
 import {Tooltip, Modal, OverlayTrigger, ListGroup, Button} from "react-bootstrap";
 import "../css/shippingAddressSelect.styles.css";
+import axiosInstance from "@/utils/interceptors";
 
 const ShippingAddressSelect = ({ 
   shippingAddressList, setData, orderId, handleModalClose,
@@ -10,6 +11,27 @@ const ShippingAddressSelect = ({
       배송지 선택시 <br/>자동으로 선택됩니다!
     </Tooltip>
   );
+
+  const selectShippingAddressHandler = (e, address) => {
+    if (setData !== null) {
+      setData(address)
+      axiosInstance.patch(`/api/order/${orderId}/address`, {
+            name: address.name,
+            phoneNum: address.phoneNum,
+            address: address.address
+        }, 
+        { withCredentials: true }
+      )
+        .then(() => {
+            // 성공적으로 처리된 경우 추가 로직을 여기에 작성
+        })
+        .catch(error => {
+            const errorMessage = `${error.response?.data?.code}: ${error.response?.data?.message}`;
+            console.log(errorMessage || 'An error occurred');
+        });
+      handleModalClose();
+    }
+  }
 
   return (
     <>
@@ -31,25 +53,7 @@ const ShippingAddressSelect = ({
             return (
               // action 때문에 button으로 바뀐다!
               <ListGroup.Item key={index} onClick={(e) => {
-                  if (setData !== null) {
-                    setData(address)
-                    fetch(`/api/order/${orderId}/address`, {
-                        method: "PATCH",
-                        headers: {
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                          name: address.name,
-                          phoneNum: address.phoneNum,
-                          address: address.address
-                        })
-                      })
-                      .then(response => {
-                        if (!response.ok) return response.json().then(err => {throw err})
-                      })
-                      .catch((err) => console.log(`${err.code}: ${err.message}`))
-                    handleModalClose();
-                  }
+                  selectShippingAddressHandler(e, address);
                 }}
               >
                 <ShippingAddressDetail address={address}/>

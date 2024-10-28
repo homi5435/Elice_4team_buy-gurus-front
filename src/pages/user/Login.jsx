@@ -11,7 +11,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Header2 from "../../components/Header2";
 import Button from "../../components/Button";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../utils/interceptors";
 
 function Login() {
   const nav = useNavigate();
@@ -29,10 +29,10 @@ function Login() {
     };
 
     try {
-      const response = await axios.post("/api/login", loginData);
+      const response = await axiosInstance.post("/api/login", loginData);
 
       console.log("로그인 성공:");
-      window.location.href = "/home";
+      nav("/home", { replace: true });
     } catch (error) {
       console.error("로그인 요청 중 오류 발생:", error);
       setError("서버와의 통신 중 오류가 발생했습니다.");
@@ -93,15 +93,6 @@ function Login() {
               className="w-100 mb-2"
             >
               Naver 로그인
-            </BootstrapButton>
-            <BootstrapButton
-              variant="outline-warning"
-              href={`${
-                import.meta.env.VITE_APP_BACKEND_URL
-              }/oauth2/authorization/kakao`}
-              className="w-100"
-            >
-              Kakao 로그인
             </BootstrapButton>
           </div>
         </Col>

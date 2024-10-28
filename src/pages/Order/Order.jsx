@@ -4,6 +4,7 @@ import { Card, Row, Col, Button,Image, Collapse, Modal, Container, Badge } from 
 import {OrderResponse} from "@/objects/OrderResponse";
 import Pagenation from "@/components/Pagenation";
 import Header from "@/components/Header";
+import axiosInstance from "@/utils/interceptors";
 
 const Order = () => {
   const [urlSearchParams] = useSearchParams();
@@ -11,7 +12,7 @@ const Order = () => {
   return (
     <div>
       <Header />
-      <OrderedItemList type={type ? type : "c"} />
+      <OrderedItemList type={type === "c" ? "c" : "s"} />
     </div>
   )
 }
@@ -26,38 +27,40 @@ const OrderedItemList = ({ type }) => {
   const [ deleteOrderId, setDeleteOrderId ] = useState(0);
 
   useEffect(() => {
-    fetch(`/api/order?type=${type}&page=${page}`)
+    axiosInstance.get(`/api/order`, { 
+      params: { type, page },
+      withCredentials: true
+    })
       .then(response => {
-        if (!response.ok) return response.json().then(err => {throw err});
-        return response.json();
-      })
-      .then(data => {
-        data = data.data;
+        const data = response.data.data;
         setTotalPage(data.pages === 0 ? 0 : data.pages);
         setOrders(data.orderList.map(order => new OrderResponse(order)));
-        if ((data.pages !== 0) && (page > data.pages)) {
+
+        if (data.pages !== 0 && page > data.pages) {
           setPage(data.pages);
         }
         setLoading(false);
       })
-      .catch((err) => console.log(`${err.code}: ${err.message}`));
-  }, [page, deleteFlag]);
+      .catch(err => {
+        const errorMessage = `${err.response?.data?.code}: ${err.response?.data?.message}`;
+        console.log(errorMessage || 'An error occurred');
+      });
+  }, [type, page, deleteFlag]);
 
   const pageChangeHandler = (page) => {
     setPage(page);
   }
 
   const deleteOrder = (orderId) => {
-    fetch(`/api/order/${orderId}`, {
-        method: "DELETE"
+    axiosInstance.delete(`/api/order/${orderId}`, {
+        withCredentials: true
       })
       .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        setDeleteFlag(!deleteFlag)
+        setDeleteFlag(!deleteFlag);
       })
-      .catch((err) => console.log(err));
+      .catch(error => {
+        console.log(`HTTP error! status: ${error.response?.status}`);
+      });
   }
 
   const deleteOrderHandler = () => {
@@ -103,11 +106,11 @@ const OrderedItemList = ({ type }) => {
                             <Card.Header>
                               <div className="d-flex justify-content-between align-items-start">
                                 <h4>{order.status}</h4>
-                                <Button variant="outline-secondary"
+                                { type === "c" && order.status !== "준비중" && <Button variant="outline-secondary"
                                   className="btn x-button"
                                   size="sm"
                                   onClick={(e) => deleteBtnClickHandler(e, order)}
-                                >X</Button>
+                                >X</Button> }
                               </div>
                               <small className="text-muted">{order.createdAt}</small>
                             </Card.Header>
